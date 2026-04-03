@@ -1,0 +1,55 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: backend
+
+  # MySQL Database Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/shopping_web?useSSL=false&serverTimezone=Asia/Taipei
+    username: root
+    password: "0000"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+
+  # Logging Configuration
+logging:
+  level:
+    com:
+      example:
+        demo: DEBUG
+    org:
+      springframework:
+        web: INFO
+      hibernate: INFO
+
+  # Springdoc OpenAPI Configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+    # JWT Configuration
+app:
+  jwt:
+    secret: ShoppingWeb0423JWW9uZ29kYmFkbWluMTIzNDU2Nzg5MDEyMzQ1Njc4
+    expiration: 900000 #15 minutes
+    refresh-expiration: 86400000 #24 hours
+
+

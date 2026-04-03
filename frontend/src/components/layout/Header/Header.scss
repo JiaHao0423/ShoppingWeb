@@ -1,0 +1,531 @@
+@import '../../../variables';
+@import '../../../mixins';
+
+// ==================== 主容器 ====================
+.header {
+  height: 80px;
+  width: 100%;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color 0.3s ease;
+
+  @include desktop {
+    padding: 0 12%;
+
+    &--orange {
+      background-color: $primary-color;
+    }
+  }
+
+  @include desktopLarge {
+    padding-left: 25%;
+    padding-right: 25%;
+  }
+
+  // ==================== 個別分頁特別設定 ====================
+  &--cart, &--checkout, &--order-complete, &--member, &--order-list, &--auth {
+    background-color: $primary-color;
+    display: none;
+
+    @include desktop {
+      display: block;
+    }
+
+    .header__hamburger-line {
+      background-color: white;
+    }
+
+    .header__icon {
+      color: white;
+    }
+
+    .header__logo-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+// ==================== 包裝容器 ====================
+.header__wrapper {
+  @include flex-between;
+  padding: 15px 8% 30px 8%;
+
+  @include desktop {
+    height: 80px;
+    padding: 15px 0;
+  }
+
+  &--search {
+    padding: 15px 6%;
+
+    @include desktop {
+      padding: 0;
+      display: grid;
+      grid-template-columns: 0.5fr 0.5fr auto 1fr;
+      align-items: center;
+      width: 100%;
+      gap: 1rem;
+    }
+  }
+}
+
+// ==================== 漢堡選單按鈕 ====================
+.header__hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 0.3s ease;
+
+  &--search {
+    display: none;
+
+    @include desktop {
+      display: flex;
+    }
+  }
+
+  &--active {
+    .header__hamburger-line {
+      &:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+      }
+
+      &:nth-child(2) {
+        opacity: 0;
+      }
+
+      &:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+      }
+    }
+  }
+}
+
+.header__hamburger-line {
+  width: 24px;
+  height: 3px;
+  background-color: $text-color;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+
+  @include desktop {
+    &--white {
+      background-color: white;
+    }
+  }
+}
+
+// ==================== Logo ====================
+.header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  &--search {
+    display: none;
+
+    @include desktop {
+      display: flex;
+      position: static;
+      transform: none;
+    }
+  }
+}
+
+.header__logo-box {
+  //background-color: $primary-color;
+  height: 30px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @include desktop {
+    height: 50px;
+    width: 100px;
+  }
+}
+
+// ==================== 返回按鈕 ====================
+.header__current-button {
+  width: 22px;
+  height: 22px;
+  margin-right: 26px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  @include desktop {
+    display: none;
+  }
+}
+
+.header__current-icon {
+  color: $text-color;
+  width: 100%;
+  height: 100%;
+}
+
+// ==================== 搜尋列 ====================
+.header__search-bar {
+  width: 334px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  background-color: #f1f1f1;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  padding-left: 15px;
+  border: none;
+
+  @include desktop {
+    width: 500px;
+    justify-self: center;
+  }
+
+  &:focus-within {
+    background-color: #ebebeb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.header__search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: $font-size-base;
+  color: $text-color;
+  outline: none;
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.header__search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 100%;
+  background-color: $primary-color;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-bottom-right-radius: 12px;
+  border-top-right-radius: 12px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba($primary-color, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.header__search-icon--searchbar {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
+  color: white;
+}
+
+.header__camera-button {
+  height: 22px;
+  width: 22px;
+  margin-right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__camera-icon {
+  color: #2c2c2c80;
+  width: 100%;
+  height: 100%;
+}
+
+// ==================== 圖標 ====================
+.header__icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &--search {
+    display: none;
+    @include desktop {
+      display: flex;
+      justify-content: end;
+      gap: 35px;
+    }
+  }
+}
+
+.header__icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  padding: 0;
+
+  @include desktop {
+    &--white {
+      color: white;
+    }
+  }
+
+  &--search {
+    @include desktop {
+      display: none;
+    }
+  }
+}
+
+// ==================== Tab 式下拉選單 ====================
+.header__dropdown, .header__dropdown--desktop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: $bg-color;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  z-index: 99;
+
+  @include desktop {
+    display: none;
+  }
+
+  // Modifier: 選單開啟
+  &--open {
+    max-height: 600px;
+
+    @include mobile {
+      max-height: 500px;
+    }
+  }
+
+}
+
+.header__dropdown--desktop {
+  display: flex;
+  justify-content: space-evenly;
+  padding-left: 11.7%;
+  padding-right: 11.7%;
+  @include mobile {
+    display: none;
+  }
+
+  @include tablet {
+    display: none;
+  }
+  @include desktop {
+    display: flex;
+  }
+}
+
+// ==================== 分類標籤 ====================
+.header__tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e5e5;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  // 隱藏滾動條但保持功能
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.header__tab {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #2c2c2c33;
+  text-align: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  @include mobile {
+    padding: 10px;
+    font-size: 1rem;
+    min-width: 70px;
+  }
+
+  &--active {
+    font-weight: 600;
+    color: $primary-color;
+    border-bottom-color: $primary-color;
+  }
+}
+
+// ==================== 內容面板 ====================
+.header__content {
+  position: relative;
+  min-height: 100vh;
+  background-color: #f1f1f1;
+}
+
+.header__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &--active {
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+  }
+}
+
+// ==================== 列表 ====================
+.header__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @include desktop {
+    gap: 15px;
+    margin-top: 40px;
+  }
+}
+
+.header__list-item {
+  border-bottom: 1px solid #2c2c2c33;
+
+  @include desktop {
+    border-bottom: none;
+  }
+}
+
+.header__list-link {
+  display: block;
+  width: 100%;
+  padding-left: 10%;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: $text-color;
+  text-align: left;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+
+  @include desktop {
+    padding: 0;
+  }
+
+  &:active {
+    background-color: #f0f0f0;
+  }
+
+  &:hover {
+    @include desktop {
+      color: $primary-color;
+    }
+  }
+}
+
+// ==================== 桌面版菜單 ====================
+.header-menu {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 35%;
+  margin: 32px 0;
+}
+
+.header__column {
+  flex: 1;
+}
+
+.header__column-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $text-color;
+  margin-bottom: 15px;
+}
+
+// ==================== 圖片展示 ====================
+.header__imagebox {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  //height: auto;
+  margin: 32px 0;
+}
+
+.header__image-container {
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  height: 180px;
+  width: 180px;
+  overflow: hidden;
+}
+
+.header__image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// ==================== 無障礙 ====================
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

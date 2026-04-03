@@ -1,0 +1,588 @@
+@import '../../variables';
+@import '../../mixins';
+
+// ============================
+// Block: .checkout
+// ============================
+.checkout {
+  background-color: #fff;
+  min-height: 100vh;
+  padding-bottom: 80px;
+
+  @include desktop {
+    padding-bottom: 0;
+  }
+
+  // ---- 行動版 Header ----
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 5px 16px;
+    background-color: $primary-color;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    @include desktop {
+      display: none;
+    }
+  }
+
+  &__back-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 500;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__header-icons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  &__icon {
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // ---- 主容器 ----
+  &__container {
+    padding: 0 7%;
+
+    @include desktop {
+      display: grid;
+      grid-template-columns: 740px 200px;
+      gap: 40px;
+      padding-left: 11.7%;
+      padding-right: 11.7%;
+      margin-bottom: 150px;
+      min-height: 700px;
+    }
+
+    @include desktopLarge {
+      padding-right: 15%;
+      padding-left: 15%;
+    }
+  }
+
+  &__form-area {
+    // 左欄表單區域
+  }
+
+  // ---- 桌面版 Footer 容器 ----
+  &__desktop-footer {
+    display: none;
+
+    @include desktop {
+      display: block;
+    }
+  }
+}
+
+// ============================
+// Block: .checkout-group
+// 付款方式 / 運送方式 區塊
+// ============================
+.checkout-group {
+  margin-bottom: 10px;
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: 500;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 5px;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin-top: 24px;
+  }
+}
+
+// ============================
+// Block: .checkout-option
+// Radio 選項（付款 / 運送）
+// ============================
+.checkout-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: $font-size-lg;
+  max-height: 20px;
+
+  &__radio-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+
+    &:checked + .checkout-option__radio {
+      border-color: $primary-color;
+
+      &::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+  }
+
+  &__radio {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    border: 2px solid $text-color;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: all 0.2s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: $primary-color;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+    }
+
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  &__sublabel {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
+}
+
+// ============================
+// Block: .checkout-form
+// 展開表單（信用卡 / 宅配）
+// ============================
+.checkout-form {
+  margin-top: 8px;
+  padding-left: 25px;
+
+  @include desktop {
+    padding-left: 32px;
+    gap: 8px;
+  }
+
+  &__section {
+    margin-bottom: 8px;
+  }
+
+  &__section-label {
+    display: block;
+    font-size: $font-size-sm;
+    color: #2C2C2C80;
+    margin-bottom: 3px;
+    margin-top: 4px;
+  }
+
+  &__field {
+    margin-bottom: 3px;
+    position: relative;
+
+  }
+
+  &__input {
+    width: 100%;
+    height: 24px;
+    padding-left: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: $font-family;
+    color: $text-color;
+    background-color: #fff;
+    transition: border-color 0.2s ease;
+    display: flex;
+
+    &::placeholder {
+      color: #bbb;
+    }
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
+    }
+  }
+
+  &__input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    display: flex;
+    align-items: center;
+  }
+
+  &__input-svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    margin-bottom: 3px;
+
+    // 行動版運送表單：堆疊
+    &--shipping {
+      grid-template-columns: 1fr;
+      gap: 0;
+
+      @include desktop {
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+      }
+    }
+  }
+
+  &__phone-row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 8px;
+
+    @include desktop {
+      gap: 5px;
+    }
+  }
+
+  &__select {
+    width: 56px;
+    height: 24px;
+    border: 1px solid #2C2C2C33;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: $font-family;
+    color: $text-color;
+    background-color: #F1F1F1;
+    cursor: pointer;
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
+    }
+  }
+}
+
+// 桌面版：信用卡表單卡片詳情 + 帳單地址 並排
+@media (min-width: $breakpoint-desktop) {
+  .checkout-form:has(.checkout-form__section + .checkout-form__section) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+// ============================
+// Block: .checkout-summary
+// 訂單資訊 / 小計 側欄
+// ============================
+.checkout-summary {
+  margin-top: 30px;
+
+  @include desktop {
+    margin-top: 24px;
+    position: sticky;
+    top: 100px;
+    width: 200px;
+    min-height: 700px;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 500;
+
+    &--mobile {
+      display: block;
+
+      @include desktop {
+        display: none;
+      }
+    }
+
+    &--desktop {
+      display: none;
+
+      @include desktop {
+        display: block;
+        line-height: 20px;
+      }
+    }
+  }
+
+  &__product-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    @include desktop {
+      flex-direction: column;
+      overflow-x: visible;
+      gap: 5px;
+      margin-top: 20px;
+    }
+  }
+
+  &__details {
+    margin-top: 30px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: $font-size-base;
+    color: $text-color;
+    margin-bottom: 8px;
+
+    @include desktop {
+      margin: 0;
+    }
+
+    &--total {
+      font-weight: 700;
+      font-size: $font-size-base;
+      color: $text-color;
+      line-height: 20px;
+      margin-top: 5px;
+    }
+  }
+
+  &__total-price {
+    color: #FF3B30;
+    font-size: $font-size-base;
+    font-weight: 700;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin-top: 50px;
+  }
+
+  &__total-section {
+    display: none;
+
+    @include desktop {
+      display: block;
+    }
+  }
+
+  &__next-btn {
+    width: 100%;
+    background: $primary-color;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+// ============================
+// Block: .checkout-product
+// 商品縮圖卡片
+// ============================
+.checkout-product {
+  flex-shrink: 0;
+  width: 180px;
+
+  @include desktop {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+
+    @include desktop {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    gap: 8px;
+
+    @include desktop {
+      margin-top: 0;
+    }
+  }
+
+  &__price {
+    font-size: $font-size-xl;
+    font-weight: 600;
+
+    @include desktop {
+      font-size: $font-size-xl;
+    }
+  }
+
+  &__delete-btn {
+    background: none;
+    border: none;
+    color: $text-color;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+
+    // 桌面版隱藏刪除按鈕（設計稿桌面版無刪除按鈕）
+    @include desktop {
+      display: none;
+    }
+  }
+}
+
+// ============================
+// Block: .checkout-footer
+// 行動版底部固定欄
+// ============================
+.checkout-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: #F1F1F1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+
+  @include desktop {
+    display: none;
+  }
+
+  &__label {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__price {
+    font-size: $font-size-xl;
+    font-weight: 500;
+    color: #FF3B30;
+  }
+
+  &__btn {
+    background: $primary-color;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    width: 100px;
+    height: 50px;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

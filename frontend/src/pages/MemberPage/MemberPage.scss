@@ -1,0 +1,640 @@
+@import '../../variables';
+@import '../../mixins';
+
+// ============================================================
+// Block: .member-page
+// 會員資料頁面
+// ============================================================
+.member-page {
+  background-color: $bg-color;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  // ── Footer 容器：行動版隱藏，桌面版顯示 ──
+  &__footer-wrapper {
+    display: none;
+
+    @include desktop {
+      display: block;
+    }
+  }
+}
+
+// ============================================================
+// Element: 行動版 Header
+// ============================================================
+.member-page__mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $primary-color;
+  color: #fff;
+  padding: 12px 30px 5px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  @include desktop {
+    display: none;
+  }
+}
+
+.member-page__mobile-header-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.member-page__mobile-header-title {
+  font-size: $font-size-xl;
+  font-weight: 500;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.member-page__mobile-header-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.member-page__mobile-header-icon-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+// ============================================================
+// Element: 主內容
+// ============================================================
+.member-page__main {
+  flex: 1;
+  min-height: 900px;
+
+  @include desktop {
+    padding: 0 11.7%;
+  }
+
+  @include desktopLarge {
+    padding: 0 25%;
+  }
+}
+
+// ============================================================
+// Element: 用戶資訊（profile）
+// ============================================================
+.member-page__profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0 10px;
+  position: relative;
+
+  @include desktop {
+    flex-direction: row;
+    align-items: center;
+    padding: $spacing-md 0 $spacing-lg;
+    gap: $spacing-md;
+  }
+}
+
+.member-page__avatar-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  @include desktop {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.member-page__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-page__name {
+  margin-top: $spacing-xs;
+  font-size: $font-size-xl;
+  font-weight: 500;
+  color: $text-color;
+
+  @include desktop {
+    margin-top: 0;
+    font-size: 1.75rem;
+  }
+}
+
+.member-page__help-btn {
+  display: none;
+
+  @include desktop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3% 3% 3% auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $text-color;
+    padding: 6px;
+
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// ============================================================
+// Element: 主體（body）— 桌面版左右分欄
+// ============================================================
+.member-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  @include desktop {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+// ============================================================
+// Element: 側欄（sidebar）
+// ============================================================
+.member-page__sidebar {
+  display: flex;
+  flex-direction: column;
+
+  @include desktop {
+    width: 280px;
+    flex-shrink: 0;
+    gap: 10px;
+  }
+}
+
+// ============================================================
+// Element: 卡片（card）
+// ============================================================
+.member-page__card {
+  background-color: $bg-color;
+  border-radius: 12px;
+  padding: 30px 30px;
+
+  @include desktop {
+    border: 1px solid #e8e8e8;
+    padding: $spacing-sm $spacing-sm $spacing-md;
+  }
+
+  // Modifier: 工具卡片
+  &--tools {
+    @include mobile {
+      border-top: 8px solid #f5f5f5;
+      border-radius: 0;
+      padding-top: $spacing-md;
+    }
+  }
+}
+
+.member-page__card-header {
+  @include flex-between;
+  margin-bottom: $spacing-sm;
+}
+
+.member-page__card-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $text-color;
+}
+
+.member-page__card-link {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  color: $secondary-color;
+  padding: 0;
+
+  &:hover {
+    color: $primary-color;
+  }
+}
+
+.member-page__card-link-icon {
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ============================================================
+// Element: 訂單狀態標籤（order-tabs）
+// 行動版：4 欄 Grid；桌面版：垂直 List
+// ============================================================
+.member-page__order-tabs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+
+  @include desktop {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.member-page__order-tab-item {
+  display: flex;
+}
+
+.member-page__order-tab-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 4px;
+  border-radius: 8px;
+  color: $text-color;
+  font-family: $font-family;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $primary-color;
+  }
+
+  // Modifier: 啟用中
+  &--active {
+    color: $primary-color;
+  }
+
+  @include desktop {
+    flex-direction: row;
+    gap: $spacing-sm;
+    padding: 12px $spacing-xs;
+    border-radius: 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.member-page__order-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 28px;
+    height: 28px;
+
+    @include desktop {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.member-page__order-tab-label {
+  font-size: 12px;
+
+  @include desktop {
+    font-size: $font-size-sm;
+  }
+}
+
+// ============================================================
+// Element: 常用工具 Grid（行動版）
+// ============================================================
+.member-page__tools-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  @include desktop {
+    display: none;
+  }
+}
+
+.member-page__tool-item {
+  display: flex;
+}
+
+.member-page__tool-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 4px;
+  border-radius: 8px;
+  color: $text-color;
+  font-family: $font-family;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $primary-color;
+  }
+
+  // Modifier: 啟用中
+  &--active {
+    color: $primary-color;
+  }
+}
+
+.member-page__tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.member-page__tool-label {
+  font-size: 12px;
+}
+
+// ============================================================
+// Element: 常用工具 List（桌面版）
+// ============================================================
+.member-page__tools-list {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @include desktop {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.member-page__tools-list-item {
+  display: flex;
+}
+
+.member-page__tools-list-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $spacing-sm;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 12px $spacing-xs;
+  border-radius: 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: $text-color;
+  font-family: $font-family;
+  transition: color 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    color: $primary-color;
+  }
+
+  // Modifier: 啟用中
+  &--active {
+    color: $primary-color;
+  }
+}
+
+.member-page__tools-list-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.member-page__tools-list-label {
+  font-size: $font-size-sm;
+}
+
+// ============================================================
+// Element: 右側最近訂單面板（orders-panel）
+// 行動版隱藏，桌面版顯示
+// ============================================================
+.member-page__orders-panel {
+  display: none;
+
+  @include desktop {
+    display: block;
+    flex: 1;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: $spacing-md;
+    min-width: 0;
+  }
+}
+
+.member-page__orders-panel-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $text-color;
+  margin-bottom: $spacing-md;
+}
+
+// ============================================================
+// Element: 訂單表格
+// ============================================================
+.member-page__orders-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-page__orders-thead {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px 80px;
+  gap: $spacing-xs;
+  padding-bottom: $spacing-xs;
+  border-bottom: 1px solid #e8e8e8;
+  margin-bottom: $spacing-xs;
+}
+
+.member-page__orders-th {
+  font-size: $font-size-sm;
+  color: $text-color;
+  font-weight: 500;
+}
+
+// ============================================================
+// Element: 訂單列（order-row）
+// ============================================================
+.member-page__order-row {
+  border-bottom: 1px solid #f0f0f0;
+  padding: $spacing-sm 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.member-page__order-row-main {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px 80px;
+  gap: $spacing-xs;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.member-page__order-id {
+  font-size: $font-size-sm;
+  color: $text-color;
+}
+
+.member-page__order-images {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3px;
+  overflow: hidden;
+  position: relative;
+  max-width: 300px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #fff);
+    pointer-events: none;
+  }
+}
+
+.member-page__order-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.member-page__order-total {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-color;
+}
+
+// Element: 訂單狀態文字
+.member-page__order-status {
+  font-size: $font-size-sm;
+  color: $secondary-color;
+
+  // Modifier: 待收貨
+  &--pending_receipt {
+    color: $secondary-color;
+  }
+
+  // Modifier: 待付款
+  &--pending_payment {
+    color: $secondary-color;
+  }
+
+  // Modifier: 已完成
+  &--completed {
+    color: $secondary-color;
+  }
+}
+
+// ============================================================
+// Element: 訂單操作按鈕群組
+// ============================================================
+.member-page__order-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-xs;
+  padding-top: $spacing-xs;
+}
+
+.member-page__order-action-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: $font-size-sm;
+  font-family: $font-family;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  // Modifier: 外框樣式
+  &--outline {
+    background-color: transparent;
+    border: 1.5px solid $primary-color;
+    color: $primary-color;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.08);
+    }
+  }
+
+  // Modifier: 實心樣式
+  &--solid {
+    background-color: $primary-color;
+    border: 1.5px solid $primary-color;
+    color: #fff;
+
+    &:hover {
+      background-color: darken($primary-color, 8%);
+    }
+  }
+}

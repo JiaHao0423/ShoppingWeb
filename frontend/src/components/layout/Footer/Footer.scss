@@ -1,0 +1,78 @@
+@import "../../../variables";
+@import '../../../mixins';
+
+.footer {
+  background-color: $primary-color;
+  height: 400px;
+  padding: 48px 0 15px 0;
+  color: white;
+  font-size: 1rem;
+
+  @include desktop {
+    height: 300px;
+    padding-left: 11.7%;
+    padding-right: 11.7%;
+  }
+
+  @include desktopLarge {
+    padding-left: 25%;
+    padding-right: 25%;
+  }
+
+
+  &__brand {
+    font-size: 1.5rem;
+    text-align: center;
+
+    @include desktop {
+      text-align: left;
+    }
+  }
+
+  &__info {
+
+    &-item {
+      font-style: normal;
+      display: flex;
+      justify-content: center;
+
+      @include desktop {
+        justify-content: left;
+      }
+    }
+  }
+
+  &__iconbox {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+
+    @include desktop {
+      justify-content: end;
+    }
+
+    a {
+      width: 20px;
+      height: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__copyright {
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: 30px;
+  }
+
+  &__content {
+    @include desktop {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+    }
+  }
+}

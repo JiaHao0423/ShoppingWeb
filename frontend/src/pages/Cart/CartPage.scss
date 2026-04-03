@@ -1,0 +1,452 @@
+@import '../../variables';
+@import '../../mixins';
+
+.cart {
+  background-color: #fff;
+  min-height: 100vh;
+  padding-bottom: 80px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 5px 16px;
+    background-color: $primary-color;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    @include desktop {
+      display: none;
+    }
+
+    &-icons {
+      display: flex;
+      gap: 10px;
+    }
+  }
+
+  &__icon {
+    color: #FFFFFF;
+    width: 30px;
+    height: 30px;
+  }
+
+  &__back-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 500;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &__container {
+    padding: 30px;
+
+    @include desktop {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+    "a c"
+    "b c";
+      gap: 8px;
+      padding-right: 11.7%;
+      padding-left: 11.7%;
+    }
+
+    @include desktopLarge {
+      padding-right: 25%;
+      padding-left: 25%;
+    }
+  }
+
+  &__table-header {
+    display: none;
+
+    @include desktop {
+      max-width: 740px;
+      display: grid;
+      grid-template-columns: 51.3% 14.8% 14.8% 14.8% 4%;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+      color: #666;
+      grid-area: a;
+    }
+  }
+
+  &__list {
+    grid-area: b;
+
+    @include desktop {
+      max-width: 740px;
+    }
+
+  }
+
+  .cart-item {
+    display: flex;
+    padding-bottom: 15px;
+    align-items: center;
+    position: relative;
+    gap: 15px;
+
+    @include desktop {
+      display: grid;
+      grid-template-columns: 20.2% 31%  14.8% 14.8% 14.8% 4%;
+      gap: 0;
+    }
+
+    &__content {
+      position: relative;
+      flex: 1;
+      height: 180px;
+      @include desktop {
+        height: 150px;
+        padding-left: 30px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+      }
+    }
+
+    &__remove-btn {
+      font-size: $font-size-xl;
+      width: 100%;
+      display: flex;
+      justify-content: end;
+      @include desktop {
+        display: none;
+      }
+
+      &--desktop {
+        display: none;
+        @include desktop {
+          display: flex;
+        }
+      }
+    }
+
+    &__name {
+      font-size: $font-size-base;
+      font-weight: 500;
+    }
+
+    &__detail {
+      font-size: 12px;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__checkbox-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+
+      @include desktop {
+        display: none;
+      }
+    }
+
+    &__checkbox {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+
+      &:checked + .cart-item__checkbox-label {
+        border-color: $primary-color;
+
+        &::after {
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      &-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #fff;
+        border: 2px solid $text-color;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          background: $primary-color;
+          transform: translate(-50%, -50%) scale(0);
+          transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+        }
+
+        &:hover {
+          border-color: $primary-color;
+        }
+      }
+    }
+
+
+    &__img {
+      width: 180px;
+      height: 180px;
+      object-fit: cover;
+      @include desktop {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+
+    &__color-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    &__size-tag {
+      background: #f0f0f0;
+      border-radius: 10px;
+      width: 26px;
+      height: 15px;
+      font-size: 10px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__price {
+      &--mobile {
+        font-size: $font-size-xl;
+        font-weight: bold;
+        margin-top: 10px;
+        @include desktop {
+          display: none;
+        }
+      }
+
+      &--desktop {
+        display: none;
+        @include desktop {
+          display: block;
+          font-size: $font-size-lg;
+        }
+      }
+    }
+
+    &__total {
+      display: none;
+      @include desktop {
+        display: block;
+        font-size: $font-size-lg;
+        font-weight: bold;
+      }
+    }
+
+  }
+
+  .quantity-selector {
+    width: 60px;
+    height: 26px;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #2C2C2C80;
+    border-radius: 20px;
+    padding: 5px 4.5px;
+    margin-top: 22px;
+    @include desktop {
+      display: none;
+    }
+
+    &--desktop {
+      display: none;
+      @include desktop {
+        display: inline-flex;
+        margin: 0;
+      }
+    }
+
+    &__btn {
+      background: #F1F1F1;
+      border: #2C2C2C80 1px solid;
+      border-radius: 50%;
+      font-size: 12px;
+      color: #2C2C2C80;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__value {
+      font-size: $font-size-base;
+    }
+  }
+
+  .cart-summary {
+    margin-top: 30px;
+    background: #fff;
+    display: none;
+    @include desktop {
+      display: block;
+      margin-top: 0;
+      width: 200px;
+      height: 100%;
+      grid-area: c;
+    }
+
+    &__title {
+      font-size: 20px;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    &__row {
+      display: flex;
+      justify-content: space-between;
+      font-size: $font-size-base;
+      &--total {
+        font-weight: 700;
+      }
+    }
+
+    &__divider {
+      margin-top: 50px;
+      border: none;
+      border-top:1px solid #CCCCCC ;
+    }
+
+    &__next-btn {
+      width: 100%;
+      background: $primary-color;
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: $font-size-lg;
+      font-weight: bold;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+  }
+
+  .cart-footer-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: #F1F1F1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+
+    @include desktop {
+      display: none;
+    }
+
+    &__price {
+      font-size: $font-size-xl;
+      font-weight: 500;
+      margin-right: 15px;
+    }
+
+    &__btn {
+      background: $primary-color;
+      color: #fff;
+      width: 120px;
+      height: 50px;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 10px;
+      font-size: $font-size-lg;
+      font-weight: 600;
+    }
+
+    &__select-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+
+      .cart-footer-mobile__checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+
+        &:checked + .cart-footer-mobile__checkbox-label {
+          border-color: $primary-color;
+
+          &::after {
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+
+        &-label {
+          position: relative;
+          height: 20px;
+          width: 20px;
+          background-color: #fff;
+          border: 2px solid $text-color;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: $primary-color;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+          }
+
+          &:hover {
+            border-color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+}

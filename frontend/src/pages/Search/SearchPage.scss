@@ -1,0 +1,219 @@
+@import '../../variables';
+@import '../../mixins';
+
+.search-page {
+  //min-height: calc(100vh - 200px);
+  background-color: #F1F1F1;
+
+  @include mobile {
+    padding: 0;
+    background-color: white;
+  }
+
+  // ==================== 佈局 ====================
+  &__layout {
+    display: grid;
+    place-items: center;
+    background-color: #F1F1F1;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-bottom: 30px;
+    // 桌面版：側邊欄 + 主內容
+    @include desktop {
+      grid-template-columns: 200px 1fr;
+      gap: $spacing-lg;
+      padding-left: 11.7%;
+      padding-right: 11.7%;
+      padding-top: 30px;
+    }
+
+    @include desktopLarge {
+      padding-left: 25.5%;
+      padding-right: 25.5%;
+    }
+  }
+
+  // ==================== 側邊欄位置 ====================
+  .sidebar {
+    position: sticky;
+    top: 60px; // Header 高度（手機版）
+    z-index: 90;
+    max-height: 50vh;
+    overflow-y: auto;
+
+    // 桌面版：固定在左側
+    @include desktop {
+      position: sticky;
+      top: 80px; // Header 高度
+      align-self: start;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      background-color: #F1F1F1;
+    }
+  }
+
+  // ==================== 主要內容區 ====================
+  &__main {
+    background-color: white;
+    border-radius: 8px;
+  }
+
+
+  // ==================== 空狀態 ====================
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl * 2 $spacing-md;
+    text-align: center;
+    background-color: #F1F1F1;
+
+    @include mobile {
+      padding: $spacing-xl $spacing-md;
+    }
+  }
+
+  &__empty-icon {
+    width: 80px;
+    height: 80px;
+    stroke-width: 1.5;
+    color: #d0d0d0;
+    margin-bottom: $spacing-lg;
+
+    @include mobile {
+      width: 60px;
+      height: 60px;
+      margin-bottom: $spacing-md;
+    }
+  }
+
+  &__empty-title {
+    font-size: $font-size-xl;
+    color: $text-color;
+    margin-bottom: $spacing-sm;
+
+    @include mobile {
+      font-size: $font-size-lg;
+    }
+  }
+
+  &__empty-description {
+    font-size: $font-size-base;
+    color: $secondary-color;
+    max-width: 400px;
+    line-height: 1.6;
+
+    @include mobile {
+      font-size: $font-size-sm;
+    }
+  }
+
+  // ==================== 覆蓋 ProductSection 樣式 ====================
+  .product-section {
+    padding: 0; // 移除原本的 padding
+    background-color: transparent; // 移除背景色
+
+    // 隱藏標題（已在上方顯示）
+    &__title {
+      display: none;
+    }
+
+    &__wrapper {
+      background-color: #F1F1F1;
+
+      @include tablet {
+        width: 100vw;
+        align-items: center;
+      }
+    }
+
+    // 隱藏查看全部按鈕
+    &__arrow--bottom {
+      display: none;
+    }
+
+    // 調整網格佈局
+    &__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: $spacing-sm;
+      grid-auto-flow: row;
+
+      // 平板版：2 欄佈局
+      @include tablet {
+        grid-template-columns: repeat(2, 1fr);
+        place-items: center;
+      }
+
+      // 桌面版：3 欄佈局
+      @include desktop {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+    }
+
+    &__card {
+      background-color: #F1F1F1;
+    }
+
+    // 隱藏橫向滾動
+    &__scroll {
+      overflow: visible;
+      padding: 0;
+    }
+
+    // 隱藏右側箭頭
+    &__arrow--right {
+      display: none;
+    }
+  }
+
+  // ==================== 調整商品卡片樣式 ====================
+  .product-card {
+    width: 180px;
+
+    @include desktop {
+      width: 240px;
+    }
+
+    &__image-wrapper {
+      padding: 0;
+      height: 180px;
+      width: 100%;
+
+      @include desktop {
+        height: 240px;
+      }
+    }
+
+    &__info {
+      padding: 0;
+    }
+
+    &__name {
+      @include mobile {
+        font-size: $font-size-base;
+      }
+    }
+
+    &__price {
+      @include mobile {
+        font-size: $font-size-xl;
+      }
+    }
+
+    &__cart-button {
+      @include mobile {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    &__cart-icon {
+      @include mobile {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
