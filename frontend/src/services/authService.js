@@ -1,8 +1,8 @@
-import api from './api';
+import axios from '../api/axios.js';
 
 const AuthService = {
     register: async (username, email, password, name, phone, address, idCardNumber, birthday, gender) => {
-        const response = await api.post(
+        const response = await axios.post(
             '/auth/register',
             { username, email, password, name, phone, address, idCardNumber, birthday, gender }
         );
@@ -10,7 +10,7 @@ const AuthService = {
     },
 
     login: async (username, password) => {
-        const response = await api.post('/auth/login', { username, password });
+        const response = await axios.post('/auth/login', { username, password });
         if (response.data.jwtToken) {
             localStorage.setItem('jwtToken', response.data.jwtToken);
             localStorage.setItem('userRoles', JSON.stringify(response.data.roles)); // 儲存使用者角色

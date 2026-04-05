@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DefaultLayout from "../../components/layout/DefaultLayout.jsx";
 import Carousel from "../../components/carousel/Carousel.jsx";
 import ProductSection from "../../components/productSection/ProductSection.jsx";
-import ProductService from '../../services/productService';
+import ProductService from '../../services/productService.js';
 import { Link } from 'react-router-dom';
 
 
@@ -16,10 +16,10 @@ const HomePage = () => {
             try {
                 setLoading(true);
                 // 獲取第一頁的商品，每頁 8 個
-                const response = await ProductService.getAllProducts(null, 0, 8);
+                const response = await ProductService.getProducts(null, 0, 8);
                 setProducts(response.content); // Spring Data JPA Page 物件的內容在 content 屬性中
             } catch (err) {
-                setError('Failed to fetch products. Please try again later.');
+                setError('取得產品資訊失敗，請稍後再試。');
                 console.error('Error fetching products:', err);
             } finally {
                 setLoading(false);
@@ -31,7 +31,7 @@ const HomePage = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading products...</div>;
+        return <div>載入中...</div>;
     }
 
     if (error) {

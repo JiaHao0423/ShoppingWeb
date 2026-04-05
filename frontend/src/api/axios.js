@@ -1,16 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'; // 使用環境變數或代理路徑
 
-const api = axios.create({
-    baseURL: API_BASE_URL,
+const apiClient = axios.create({
+    baseURL: 'http://localhost:8080/api',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 // 請求攔截器：在每個請求中加入 JWT Token
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('jwtToken'); // 從 localStorage 獲取 Token
         if (token) {
@@ -24,7 +23,7 @@ api.interceptors.request.use(
 );
 
 // 回應攔截器：處理錯誤，例如 Token 過期
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
     (response) => {
         return response;
     },
@@ -39,4 +38,4 @@ api.interceptors.response.use(
     }
 );
 
-export default api;
+export default apiClient;

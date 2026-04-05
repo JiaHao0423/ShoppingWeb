@@ -1,4 +1,4 @@
-import api from './api';
+import axios from '../api/axios.js';
 
 const ProductService = {
     getAllProducts: async (categoryId, page = 0, size = 10) => {
@@ -6,17 +6,17 @@ const ProductService = {
         if (categoryId) {
             params.categoryId = categoryId;
         }
-        const response = await api.get('/products', { params });
+        const response = await axios.get('/products', { params });
         return response.data;
     },
 
     getProductById: async (id) => {
-        const response = await api.get(`/products/${id}`);
+        const response = await axios.get(`/products/${id}`);
         return response.data;
     },
 
     getAllCategories: async () => {
-        const response = await api.get('/products/categories');
+        const response = await axios.get('/products/categories');
         return response.data;
     },
 };

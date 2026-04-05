@@ -68,7 +68,7 @@
         <!-- JWT Dependencies -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
+            <artifactId>jjwt</artifactId>
             <version>0.13.0</version>
         </dependency>
         <dependency>
