@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate, Link} from 'react-router-dom';
 import Header from '../../components/layout/Header/Header.jsx';
 import './AuthPage.scss';
+import AuthService from "../../services/authService.js";
+import {useAuth} from "../../contexts/AuthContext.jsx";
 
 // ==================== 頁面設定 ====================
 
@@ -10,9 +12,9 @@ const PAGE_CONFIG = {
         title: '建立新帳戶',
         subtitle: '請輸入真實資料',
         fields: [
-            { name: 'name', label: '姓名', type: 'text' },
-            { name: 'account', label: '帳號', type: 'text' },
-            { name: 'password', label: '密碼', type: 'password' },
+            {name: 'name', label: '姓名', type: 'text', required: true},
+            {name: 'account', label: '帳號', type: 'text', required: true},
+            {name: 'password', label: '密碼', type: 'password', required: true},
         ],
         rememberMe: true,
         forgotPassword: false,
@@ -21,14 +23,14 @@ const PAGE_CONFIG = {
         socialButtons: ['google', 'apple'],
         bottomDivider: true,
         bottomLink: null,
-        footerLink: { text: '忘記密碼？', to: '/forgot-password' },
+        footerLink: {text: '忘記密碼？', to: '/forgot-password'},
     },
     login: {
         title: '歡迎回來！',
         subtitle: null,
         fields: [
-            { name: 'account', label: '帳號', type: 'text' },
-            { name: 'password', label: '密碼', type: 'password' },
+            {name: 'account', label: '帳號', type: 'text', required: true},
+            {name: 'password', label: '密碼', type: 'password', required: true},
         ],
         rememberMe: true,
         forgotPassword: true,
@@ -36,15 +38,15 @@ const PAGE_CONFIG = {
         socialDividerText: '使用以下方式快速登入',
         socialButtons: ['google', 'apple'],
         bottomDivider: true,
-        bottomLink: { text: '建立帳戶', to: '/register' },
+        bottomLink: {text: '建立帳戶', to: '/register'},
         footerLink: null,
     },
     'simple-login': {
         title: '登入',
         subtitle: null,
         fields: [
-            { name: 'account', label: '帳號', type: 'text' },
-            { name: 'password', label: '密碼', type: 'password' },
+            {name: 'account', label: '帳號', type: 'text', required: true},
+            {name: 'password', label: '密碼', type: 'password', required: true},
         ],
         rememberMe: true,
         forgotPassword: false,
@@ -53,20 +55,106 @@ const PAGE_CONFIG = {
         socialButtons: ['google', 'apple'],
         bottomDivider: true,
         bottomLink: null,
-        footerLink: { text: '忘記密碼？', to: '/forgot-password' },
+        footerLink: {text: '忘記密碼？', to: '/forgot-password'},
     },
 };
 
 // ==================== 主組件 ====================
 
-const AuthPage = ({ variant = 'login' }) => {
+const AuthPage = ({variant = 'login'}) => {
     const navigate = useNavigate();
     const config = PAGE_CONFIG[variant] || PAGE_CONFIG.login;
+    const { login } = useAuth();
+
 
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({
+        name: '',
+        account: '',
+        password: '',
+    });
 
-    const handleGoBack = () => navigate(-1);
+
+    //表單欄位變化處理函數
+    const handleGoBack = (e) => {
+        const {name, value} = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        if (error) setError('');
+    };
+
+    //表單欄位變化處理函數
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        if (error) setError('');
+    };
+
+
+    //表單驗證函數
+    const validateForm = () => {
+        for (let field of config.fields) {
+            if (field.required && !formData[field.name]?.trim()) {
+                setError(`${field.label}為必填項`);
+                return false;
+            }
+        }
+        return true;
+    };
+
+
+    //表單提交函數
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        setLoading(true);
+        setError('');
+
+        try {
+            if (variant === 'register') {
+                // 註冊邏輯
+                await AuthService.register(
+                    formData.account,
+                    formData.account + '@example.com',
+                    formData.password,
+                    formData.name,
+                    '', // phone
+                    '', // address
+                    '', // idCardNumber
+                    '', // birthday
+                    '' // gender
+                );
+                navigate('/login');
+            } else {
+                // 登入邏輯
+                const response = await AuthService.login(formData.account, formData.password);
+
+                login({
+                    token: response.token,
+                    roles: response.roles
+                });
+
+                navigate('/');
+            }
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || err.message || '操作失敗，請稍後再試';
+            setError(errorMessage);
+            console.error('Auth error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     // 密碼眼睛圖標
     const EyeIcon = () => (
@@ -76,9 +164,10 @@ const AuthPage = ({ variant = 'login' }) => {
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
         >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+                 strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
             </svg>
         </button>
     );
@@ -88,13 +177,14 @@ const AuthPage = ({ variant = 'login' }) => {
 
             {/* ── 行動版返回按鈕 ── */}
             <button className="auth__back-btn" onClick={handleGoBack} aria-label="返回">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                     strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
                 </svg>
             </button>
 
             {/* ── 桌面版 Header ── */}
-            <Header variant="auth" />
+            <Header variant="auth"/>
 
             {/* ── 主內容 ── */}
             <main className="auth__main">
@@ -109,7 +199,13 @@ const AuthPage = ({ variant = 'login' }) => {
                     </div>
 
                     {/* 右側表單區 */}
-                    <form className="auth__form" onSubmit={(e) => e.preventDefault()}>
+                    <form className="auth__form" onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="auth__error-message">
+                                {error}
+                            </div>
+                        )}
+
 
                         {/* 動態欄位 */}
                         {config.fields.map((field) => (
@@ -120,8 +216,12 @@ const AuthPage = ({ variant = 'login' }) => {
                                         className="auth__input"
                                         type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
                                         name={field.name}
+                                        value={formData[field.name]}
+                                        onChange={handleInputChange}
+                                        disabled={loading}
+                                        required={field.required}
                                     />
-                                    {field.type === 'password' && <EyeIcon />}
+                                    {field.type === 'password' && <EyeIcon/>}
                                 </div>
                             </div>
                         ))}
@@ -147,14 +247,19 @@ const AuthPage = ({ variant = 'login' }) => {
                         )}
 
                         {/* 主按鈕 */}
-                        <button type="submit" className={`auth__submit-btn ${variant === 'simple-login' ? 'auth__submit-btn-login' : ''}`}>
-                            {config.submitLabel}
+                        <button
+                            type="submit"
+                            className={`auth__submit-btn ${variant === 'simple-login' ? 'auth__submit-btn-login' : ''}`}
+                            disabled={loading}
+                        >
+                            {loading ? '處理中...' : config.submitLabel}
                         </button>
+
 
                         {/* 第三方登入分隔文字 */}
                         {config.socialDividerText && (
                             <div className="auth__social-divider">
-                                <span className="auth__social-divider-line" />
+                                <span className="auth__social-divider-line"/>
                                 <span className="auth__social-divider-text">{config.socialDividerText}</span>
                             </div>
                         )}
@@ -172,7 +277,7 @@ const AuthPage = ({ variant = 'login' }) => {
                         )}
 
                         {/* 底部分隔線 */}
-                        {config.bottomDivider && <hr className="auth__divider" />}
+                        {config.bottomDivider && <hr className="auth__divider"/>}
 
                         {/* 底部連結（如「建立帳戶」） */}
                         {config.bottomLink && (

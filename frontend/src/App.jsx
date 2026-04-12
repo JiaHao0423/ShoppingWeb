@@ -10,6 +10,7 @@ import AuthPage from "./pages/AuthPage/AuthPage.jsx";
 import React from 'react';
 import {AuthProvider} from './contexts/AuthContext.jsx';
 import {CartProvider} from './contexts/CartContext.jsx';
+import {ProtectedRoute} from "./components/protectedRoute/ProtectedRoute.jsx";
 
 
 function App() {
@@ -24,14 +25,24 @@ function App() {
                         <Route path="/home" element={<HomePage/>}/>
                         <Route path="/search" element={<SearchPage/>}/>
                         {/*<Route path="/product/:id" element={<ProductDetailPage />} />*/}
-                        <Route path="/cart" element={<CartPage/>}/>
                         <Route path="/checkout" element={<CheckoutPage/>}/>
                         <Route path="/order-complete" element={<OrderCompletePage/>}/>
                         <Route path="/member" element={<MemberPage/>}/>
-                        <Route path="/orders" element={<OrderListPage/>}/>
                         <Route path="/register" element={<AuthPage variant="register"/>}/>
                         <Route path="/login" element={<AuthPage variant="login"/>}/>
                         <Route path="/simple-login" element={<AuthPage variant="simple-login"/>}/>
+
+                        {/*保護路由*/}
+                        <Route path="/cart" element={
+                            <ProtectedRoute>
+                                <CartPage/>
+                            </ProtectedRoute>
+                        }/>
+                        <Route path="/orders" element={
+                            <ProtectedRoute>
+                                <OrderListPage/>
+                            </ProtectedRoute>
+                        }/>
                     </Routes>
                 </BrowserRouter>
             </CartProvider>

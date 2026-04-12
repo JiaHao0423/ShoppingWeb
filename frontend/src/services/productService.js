@@ -1,7 +1,7 @@
 import axios from '../api/axios.js';
 
 const ProductService = {
-    getAllProducts: async (categoryId, page = 0, size = 10) => {
+    getProducts: async (categoryId, page = 0, size = 10) => {
         const params = { page, size };
         if (categoryId) {
             params.categoryId = categoryId;

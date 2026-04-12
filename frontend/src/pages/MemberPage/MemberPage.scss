@@ -85,6 +85,25 @@
   }
 }
 
+.member-page__logout-btn {
+  padding: 8px 16px;
+  background-color: #D4A5A5;  // 使用您的主色
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: darken(#D4A5A5, 10%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 // ============================================================
 // Element: 主內容
 // ============================================================

@@ -1,52 +1,76 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import AuthService from '../services/authService';
 
-const AuthContext = createContext(null);
+// 建立 Context
+export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+// 建立 Provider 組件
+export function AuthProvider({ children }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRoles, setUserRoles] = useState([]);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    // 初始化：應用啟動時檢查 localStorage 中是否有 Token
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
+        const token = localStorage.getItem('token');
         const roles = localStorage.getItem('userRoles');
+
         if (token && roles) {
             setIsAuthenticated(true);
-            setUserRoles(JSON.parse(roles));
+            setUser({
+                token: token,
+                roles: JSON.parse(roles)
+            });
         }
+
         setLoading(false);
     }, []);
 
-    const login = async (username, password) => {
-        try {
-            const data = await AuthService.login(username, password);
-            setIsAuthenticated(true);
-            setUserRoles(data.roles);
-            return true;
-        } catch (error) {
-            console.error('Login failed:', error);
-            setIsAuthenticated(false);
-            setUserRoles([]);
-            throw error;
-        }
+    // 登入方法
+    const login = (userData) => {
+        setIsAuthenticated(true);
+        setUser(userData);
+        setError(null);
     };
 
+    // 登出方法
     const logout = () => {
-        AuthService.logout();
         setIsAuthenticated(false);
-        setUserRoles([]);
+        setUser(null);
+        AuthService.logout(); // 清除 localStorage
+        setError(null);
     };
 
-    const hasRole = (role) => {
-        return userRoles.includes(role);
+    // 檢查是否已認證
+    const isLoggedIn = () => {
+        return isAuthenticated && !!localStorage.getItem('jwtToken');
+    };
+
+    const value = {
+        isAuthenticated,
+        user,
+        loading,
+        error,
+        login,
+        logout,
+        isLoggedIn,
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userRoles, loading, login, logout, hasRole }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
-};
+}
 
-export const useAuth = () => useContext(AuthContext);
+// 建立 useAuth Hook，方便在組件中使用
+export function useAuth() {
+    const context = React.useContext(AuthContext);
+
+    if (!context) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
+
+    return context;
+}

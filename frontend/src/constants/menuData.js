@@ -13,14 +13,14 @@ export const MENU_CATEGORIES = [
         items: [
             { name: 'T恤', path: '/products/t-shirt' },
             { name: '襯衫', path: '/products/shirt' },
-            { name: '設計類上衣', path: '/products/designer-tops' },
+            { name: '毛衣', path: '/products/sweater' },
         ],
     },
     {
         id: 'bottoms',
         name: '下身',
         items: [
-            { name: '長褲', path: '/products/long-pants' },
+            { name: '牛仔褲', path: '/products/jeans' },
             { name: '短褲', path: '/products/shorts' },
             { name: '裙子', path: '/products/skirt' },
         ],
@@ -29,10 +29,10 @@ export const MENU_CATEGORIES = [
         id: 'onePiece',
         name: '連身',
         items: [
-            { name: '外套', path: '/products/dress' },
-            { name: '西裝外套', path: '/products/jumpsuit' },
-            { name: '針織外套', path: '/products/cardigan' },
-            { name: '抗UV防曬外套', path: '/products/uv-jacket' },
+            { name: '洋裝', path: '/products/dresses' },
+            { name: '連身褲', path: '/products/jumpsuit' },
+            { name: '外套', path: '/products/jackets' },
+            { name: '防曬衣', path: '/products/sunscreen-clothing' },
         ],
     },
 ];
@@ -44,14 +44,14 @@ export const MENU_CATEGORIES = [
 export const IMAGE_CATEGORIES = [
     {
         src: Image01,
-        title: '新年限定 7 折優惠',
+        title: '季節特賣 限時優惠',
     },
     {
         src: Image02,
-        title: '人氣商品限時免運',
+        title: '熱銷商品 限時免運',
     },
     {
         src: Image03,
-        title: '會員獨享折扣專區',
+        title: '會員專享 折扣優惠',
     },
 ];

@@ -3,6 +3,8 @@ import './Header.scss';
 import {Link, useNavigate} from 'react-router-dom';
 import clsx from 'clsx';
 import Logo from '../../../assets/header/logo.svg';
+import {useAuth} from '../../../contexts/AuthContext';
+
 
 // 導入子組件
 import HamburgerButton from './HamburgerButton';
@@ -23,6 +25,7 @@ import {ROUTES} from '../../../constants/routes.js';
 const Header = ({variant = 'default'}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('tops');
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     // 判斷是否在搜尋頁面
@@ -83,8 +86,16 @@ const Header = ({variant = 'default'}) => {
      * 處理會員中心點擊
      */
     const handleMemberClick = useCallback(() => {
-        navigate(ROUTES.MEMBER);
-    }, [navigate]);
+        if (isAuthenticated) {
+            // 已登入：導向會員中心
+            navigate(ROUTES.MEMBER);
+        } else {
+            // 未登入：導向登入頁面
+            navigate(ROUTES.LOGIN);
+        }
+    }, [navigate, isAuthenticated]);
+
+
 
     // 根類名
     const rootClass = clsx('header', `header--${variant}`, {
@@ -139,7 +150,7 @@ const Header = ({variant = 'default'}) => {
                         aria-label="回到首頁"
                     >
                         <div className="header__logo-box">
-                            <img src={Logo} alt="logo" />
+                            <img src={Logo} alt="logo"/>
                         </div>
                     </Link>
 

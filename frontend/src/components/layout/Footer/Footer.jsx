@@ -6,13 +6,13 @@ const Footer = () => {
         <footer className="footer">
             <div className="container">
                 {/* 品牌名稱 */}
-                <div className="footer__brand">時尚風格服飾有限公司</div>
+                <div className="footer__brand">Fashion Elegance</div>
                 <div className="footer__content">
                     {/* 聯絡資訊區塊 1 */}
                     <address className="footer__info">
                         <address className="footer__info-item footer__info-item--address">
                             <span className="footer__info-label">地址：</span>
-                            台中市東區自由路一段10號
+                            台北市中山區市民大道100號
                         </address>
                         <div className="footer__info-item">
                             <span className="footer__info-label">電話：</span>
@@ -31,7 +31,7 @@ const Footer = () => {
                     <div>
                         <div className="footer__info-item">
                             <span className="footer__info-label">營業時間：</span>
-                            週一至週五 10:00 - 19:00
+                            週一至週六 10:00 - 19:00
                         </div>
                         <div className="footer__info-item">
                             <span className="footer__info-label">網站：</span>
@@ -41,7 +41,7 @@ const Footer = () => {
                                 rel="noopener noreferrer"
                                 className="footer__info-link"
                             >
-                                www.fashionstyle.com.tw
+                                www.fashionelegance.com
                             </a>
                         </div>
                         <div className="footer__info-item">

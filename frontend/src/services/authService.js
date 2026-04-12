@@ -11,8 +11,8 @@ const AuthService = {
 
     login: async (username, password) => {
         const response = await axios.post('/auth/login', { username, password });
-        if (response.data.jwtToken) {
-            localStorage.setItem('jwtToken', response.data.jwtToken);
+        if (response.data.token) {
+            localStorage.setItem('jwtToken', response.data.token);
             localStorage.setItem('userRoles', JSON.stringify(response.data.roles)); // 儲存使用者角色
         }
         return response.data;

@@ -1,7 +1,7 @@
 import DefaultLayout from "../../components/layout/DefaultLayout.jsx";
 import ProductSection from "../../components/productSection/ProductSection.jsx";
 import {useState} from "react";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "../../components/sidebar/Sidebar.jsx";
 import './SearchPage.scss';
 
 const SearchPage = () => {

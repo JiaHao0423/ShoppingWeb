@@ -68,7 +68,7 @@ const ProductSection = ({
                                         onClick={() => handleProductClick(product.id)}
                                     >
                                         <img
-                                            src={product.image}
+                                            src={product.imageUrl}
                                             alt={product.name}
                                             className="product-card__image"
                                             loading="lazy"
@@ -77,7 +77,7 @@ const ProductSection = ({
                                         {/* 促銷標籤 */}
                                         {product.isHot && (
                                             <div className="product-card__badge">
-                                                <span className="product-card__badge-text">最暢銷</span>
+                                                <span className="product-card__badge-text">熱銷</span>
                                             </div>
                                         )}
                                     </div>

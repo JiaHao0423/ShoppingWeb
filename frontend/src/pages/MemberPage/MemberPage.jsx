@@ -4,6 +4,7 @@ import Header from '../../components/layout/Header/Header.jsx';
 import Footer from '../../components/layout/Footer/Footer.jsx';
 import {ROUTES} from '../../constants/routes.js';
 import './MemberPage.scss';
+import {useAuth} from "../../contexts/AuthContext.jsx";
 
 // ==================== 模擬資料 ====================
 
@@ -200,13 +201,12 @@ function LocationIcon() {
     );
 }
 
-function QuestionIcon() {
+function LogoutIcon() {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-             strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-            <line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="2.5"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
     );
 }
@@ -247,9 +247,15 @@ const MemberPage = () => {
     const navigate = useNavigate();
     const [activeOrderTab, setActiveOrderTab] = useState('');
     const [activeTool, setActiveTool] = useState('');
+    const { logout } = useAuth();
 
     const handleGoBack = () => navigate(-1);
     const handleAllOrders = () => navigate(ROUTES.ORDERS);
+
+    const handleLogout = () => {
+        logout();  // 清除認證狀態和 localStorage
+        navigate(ROUTES.LOGIN);  // 導向登入頁面
+    };
 
     return (
         <div className="member-page">
@@ -268,14 +274,14 @@ const MemberPage = () => {
                 </button>
                 <h1 className="member-page__mobile-header-title">會員</h1>
                 <div className="member-page__mobile-header-icons">
-                    <button className="member-page__mobile-header-icon-btn" aria-label="幫助">
-                        <QuestionIcon/>
-                    </button>
                     <button className="member-page__mobile-header-icon-btn" aria-label="通知">
                         <BellIcon/>
                     </button>
                     <button className="member-page__mobile-header-icon-btn" aria-label="設定">
                         <SettingsIcon/>
+                    </button>
+                    <button className="member-page__mobile-header-icon-btn" aria-label="登出" onClick={handleLogout}>
+                        <LogoutIcon/>
                     </button>
                 </div>
             </header>
@@ -298,8 +304,8 @@ const MemberPage = () => {
                         </div>
                         <span className="member-page__name">{MEMBER.name}</span>
                         {/* 桌面版問號按鈕 */}
-                        <button className="member-page__help-btn" aria-label="幫助">
-                            <QuestionIcon/>
+                        <button className="member-page__help-btn" aria-label="登出" onClick={handleLogout}>
+                            <LogoutIcon/>
                         </button>
                     </section>
 
