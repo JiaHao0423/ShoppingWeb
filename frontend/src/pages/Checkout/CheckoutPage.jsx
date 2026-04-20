@@ -53,13 +53,6 @@ const CheckoutPage = () => {
     };
 
     /**
-     * 刪除訂單項目
-     */
-    const handleRemoveItem = (itemId) => {
-        console.log('刪除商品:', itemId);
-    };
-
-    /**
      * 結帳處理
      */
     const handleCheckout = () => {
@@ -383,28 +376,6 @@ const CheckoutPage = () => {
                                     <span className="checkout-product__price">
                                         ${item.price} ({item.quantity})
                                     </span>
-                                    <button
-                                        className="checkout-product__delete-btn"
-                                        onClick={() => handleRemoveItem(item.id)}
-                                        aria-label="刪除商品"
-                                    >
-                                        <svg
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <polyline points="3 6 5 6 21 6" />
-                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                                            <path d="M10 11v6" />
-                                            <path d="M14 11v6" />
-                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                                        </svg>
-                                    </button>
                                 </div>
                             </div>
                         ))}

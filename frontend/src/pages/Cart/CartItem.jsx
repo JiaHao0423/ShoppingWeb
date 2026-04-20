@@ -7,8 +7,11 @@ import QuantitySelector from "./QuantitySelector.jsx";
  * @param {function} onRemove - 刪除項目回調
  */
 const CartItem = ({ item, onQuantityChange, onRemove }) => {
+    // 防錯處理：確保 item 存在且有數值
+    if (!item) return null;
+
     const handleIncrease = () => {
-        onQuantityChange(item.id, item.quantity + 1);
+        onQuantityChange(item.id, (item.quantity || 0) + 1);
     };
 
     const handleDecrease = () => {
@@ -18,12 +21,12 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
     };
 
     const handleRemove = () => {
-        // 預留空間：實際刪除功能將在此實現
-        console.log(`刪除商品 ID: ${item.id}`);
         onRemove(item.id);
     };
 
-    const itemTotal = item.price * item.quantity;
+    const price = Number(item.price) || 0;
+    const quantity = Number(item.quantity) || 0;
+    const itemTotal = price * quantity;
 
     return (
         <div className="cart-item">
@@ -48,27 +51,26 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
-                <h3 className="cart-item__name">{item.name}</h3>
+                <h3 className="cart-item__name">{item.name || '未命名商品'}</h3>
                 <div className="cart-item__detail">
-                    顏色
-                    <span className="cart-item__color-dot" style={{ backgroundColor: item.color }} />
+                    顏色：<span className="cart-item__color-text">{item.color || '無'}</span>
                 </div>
                 <div className="cart-item__detail">
-                    尺寸 <span className="cart-item__size-tag">{item.size}</span>
+                    尺寸：<span className="cart-item__size-tag">{item.size || '無'}</span>
                 </div>
                 <QuantitySelector
-                    quantity={item.quantity}
+                    quantity={quantity}
                     onIncrease={handleIncrease}
                     onDecrease={handleDecrease}
                     variant="mobile"
                 />
-                <div className="cart-item__price cart-item__price--mobile">${item.price}</div>
+                <div className="cart-item__price cart-item__price--mobile">${itemTotal}</div>
             </div>
 
             {/* 桌機版顯示 */}
-            <div className="cart-item__price cart-item__price--desktop">${item.price}</div>
+            <div className="cart-item__price cart-item__price--desktop">${price}</div>
             <QuantitySelector
-                quantity={item.quantity}
+                quantity={quantity}
                 onIncrease={handleIncrease}
                 onDecrease={handleDecrease}
                 variant="desktop"

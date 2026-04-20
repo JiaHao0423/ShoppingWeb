@@ -6,10 +6,7 @@ import com.ben.com.backend.dto.cart.CartResponse;
 import com.ben.com.backend.dto.product.ProductVariantResponse;
 import com.ben.com.backend.exception.BadRequestException;
 import com.ben.com.backend.exception.ResourceNotFoundException;
-import com.ben.com.backend.model.Cart;
-import com.ben.com.backend.model.CartItem;
-import com.ben.com.backend.model.ProductVariant;
-import com.ben.com.backend.model.User;
+import com.ben.com.backend.model.*;
 import com.ben.com.backend.repository.CartItemRepository;
 import com.ben.com.backend.repository.CartRepository;
 import com.ben.com.backend.repository.ProductVariantRepository;
@@ -127,6 +124,7 @@ public class CartService {
 
   private CartItemResponse convertToCartItemResponse(CartItem cartItem) {
     ProductVariant productVariant = cartItem.getProductVariant();
+    Product product = productVariant.getProduct();
     BigDecimal subtotal = productVariant.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
     return CartItemResponse.builder()
@@ -136,7 +134,9 @@ public class CartService {
         .color(productVariant.getColor())
         .size(productVariant.getSize())
         .stock(productVariant.getStock())
-        .imageUrl(productVariant.getImageUrl())
+        .imageUrl(productVariant.getImageUrl() != null ? productVariant.getImageUrl() : product.getImageUrl())
+        .productName(product.getName())
+        .price(product.getPrice())
         .build())
       .quantity(cartItem.getQuantity())
       .subtotal(subtotal)

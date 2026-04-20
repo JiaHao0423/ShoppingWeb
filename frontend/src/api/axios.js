@@ -28,11 +28,21 @@ apiClient.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response && error.response.status === 401) {
-            // Token 過期或無效，導向登入頁面或清除 Token
-            console.error('Unauthorized, logging out...');
+        // ✅ 同時處理 401 (Unauthorized) 和 403 (Forbidden)
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            console.error('Token 已失效或權限不足，正在清理登入狀態...');
+
+            // 清除 localStorage 中的 Token
             localStorage.removeItem('jwtToken');
-            // window.location.href = '/login'; // 根據您的路由設定調整
+
+            // 💡 建議：如果是在首頁等公開頁面，可以只清除 Token 不跳轉
+            // 如果是在需要權限的頁面，則強制跳轉到登入頁
+            if (window.location.pathname !== '/' && !window.location.pathname.startsWith('/product')) {
+                window.location.href = '/login';
+            } else {
+                // 如果在公開頁面，重新整理以訪客身份重新請求
+                window.location.reload();
+            }
         }
         return Promise.reject(error);
     }

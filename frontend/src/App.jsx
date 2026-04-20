@@ -7,6 +7,7 @@ import OrderCompletePage from "./pages/OrderCompletePage/OrderCompletePage.jsx";
 import MemberPage from "./pages/MemberPage/MemberPage.jsx";
 import OrderListPage from "./pages/OrderList/OrderList.jsx";
 import AuthPage from "./pages/AuthPage/AuthPage.jsx";
+import ProductDetailPage from "./pages/ProductDetail/ProductDetailPage.jsx";
 import React from 'react';
 import {AuthProvider} from './contexts/AuthContext.jsx';
 import {CartProvider} from './contexts/CartContext.jsx';
@@ -24,7 +25,7 @@ function App() {
                         <Route path="/" element={<Navigate to="/home"/>}/>
                         <Route path="/home" element={<HomePage/>}/>
                         <Route path="/search" element={<SearchPage/>}/>
-                        {/*<Route path="/product/:id" element={<ProductDetailPage />} />*/}
+                        <Route path="/product/:id" element={<ProductDetailPage/>} />
                         <Route path="/checkout" element={<CheckoutPage/>}/>
                         <Route path="/order-complete" element={<OrderCompletePage/>}/>
                         <Route path="/member" element={<MemberPage/>}/>

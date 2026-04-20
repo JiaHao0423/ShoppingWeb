@@ -27,12 +27,6 @@ const ProductSection = ({
         }
     };
 
-    // 加入購物車
-    const handleAddToCart = (product) => {
-        console.log('加入購物車:', product);
-        // 這裡可以加入實際的購物車邏輯
-    };
-
     // 查看商品詳情
     const handleProductClick = (productId) => {
         navigate(`/product/${productId}`);
@@ -68,7 +62,7 @@ const ProductSection = ({
                                         onClick={() => handleProductClick(product.id)}
                                     >
                                         <img
-                                            src={product.imageUrl}
+                                            src={product.imageUrl || product.image}
                                             alt={product.name}
                                             className="product-card__image"
                                             loading="lazy"
@@ -92,19 +86,8 @@ const ProductSection = ({
                                         </h3>
 
                                         <div className="product-card__footer">
-                                            <span className={`product-card__price ${product.isHot ? 'product-card__price--red' : ''}`}>${product.price}</span>
-
-                                            <button
-                                                className="product-card__cart-button"
-                                                onClick={() => handleAddToCart(product)}
-                                                aria-label="加入購物車"
-                                            >
-                                                <svg className="product-card__cart-icon" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                                </svg>
-                                            </button>
+                                            <span
+                                                className={`product-card__price ${product.isHot ? 'product-card__price--red' : ''}`}>${product.price}</span>
                                         </div>
                                     </div>
                                 </article>
@@ -117,7 +100,8 @@ const ProductSection = ({
                                 aria-label="查看更多"
                             >
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M9 5l7 7-7 7"/>
                                 </svg>
                             </button>
                         </div>

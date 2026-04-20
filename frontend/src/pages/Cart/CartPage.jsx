@@ -1,79 +1,79 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import './CartPage.scss';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from '../../components/layout/Header/Header.jsx';
 import CartItem from "./CartItem.jsx";
 import CartSummary from "./CartSummary.jsx";
+import CartService from '../../services/cartService';
+import { useAuth } from '../../contexts/AuthContext';
+import { ROUTES } from '../../constants/routes';
 
 const Cart = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, loading: authLoading } = useAuth();
+    const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // 初始商品數據
-    const initialCartItems = [
-        {
-            id: 1,
-            name: '女士短版襯衫',
-            color: '#FFB6C1',
-            size: 'S',
-            price: 590,
-            quantity: 1,
-            img: 'https://media.istockphoto.com/id/1360648166/photo/classic-business-style-of-clothing.webp?a=1&b=1&s=612x612&w=0&k=20&c=QZrzfDc1WmpfW7gVgPAvNXnmFmylvhtmrHito_6ogFE='
-        },
-        {
-            id: 2,
-            name: '高腰牛仔褲',
-            color: '#4A5568',
-            size: 'M',
-            price: 890,
-            quantity: 1,
-            img: 'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fEhpZ2gtd2Fpc3RlZCUyMGplYW5zfGVufDB8fDB8fHww'
-        },
-        {
-            id: 3,
-            name: '簡約白色T恤',
-            color: '#FFFFFF',
-            size: 'L',
-            price: 350,
-            quantity: 2,
-            img: 'https://plus.unsplash.com/premium_photo-1691367279139-218a8b8dcbb3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8U2ltcGxlJTIwd2hpdGUlMjBULXNoaXJ0fGVufDB8fDB8fHww'
-        },
-        {
-            id: 4,
-            name: '運動連帽外套',
-            color: '#2C3E50',
-            size: 'M',
-            price: 1290,
-            quantity: 1,
-            img: 'https://images.unsplash.com/photo-1674316941849-69c9f21604e7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGF0aGxldGljJTIwaG9vZGVkJTIwamFja2V0fGVufDB8fDB8fHww'
-        },
-        {
-            id: 5,
-            name: '碎花連身裙',
-            color: '#FFE4E1',
-            size: 'S',
-            price: 1190,
-            quantity: 1,
-            img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmxvcmFsJTIwZHJlc3N8ZW58MHx8MHx8fDA%3D'
-        },
-        {
-            id: 6,
-            name: '黑色皮革夾克',
-            color: '#1A1A1A',
-            size: 'M',
-            price: 2490,
-            quantity: 1,
-            img: 'https://media.istockphoto.com/id/1305989617/photo/portrait-of-cool-young-handsome-man-wearing-leather-jacket-and-leaning-against-concrete-wall.webp?a=1&b=1&s=612x612&w=0&k=20&c=mEptiAgYJR9pLEVCvqLs1iadQMhRtHMGZnXZ9JQZNNI='
-        },
-    ];
+    // 獲取購物車資料
+    const fetchCart = async () => {
+        try {
+            setLoading(true);
+            const data = await CartService.getCart();
+            console.log('後端回傳的購物車原始資料:', data);
 
-    const [cartItems, setCartItems] = useState(initialCartItems);
+            // 根據 Console 截圖，資料結構為 { id: 5, items: [...], totalAmount: 299 }
+            const rawItems = data.items || [];
+
+            const formattedItems = rawItems.map(({ id, quantity = 1, productVariant = {} }) => {
+                //預防出現沒有讀取到商品資料
+                const {
+                    id: variantId,
+                    productName: name = '未命名商品',
+                    color = '無',
+                    size = '無',
+                    price = 0,
+                    imageUrl
+                } = productVariant;
+
+                return {
+                    id,
+                    variantId,
+                    name,
+                    color,
+                    size,
+                    price: +price || 0,
+                    quantity: +quantity,
+                    img: imageUrl || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200'
+                };
+            });
+
+            console.log('格式化後的購物車資料:', formattedItems);
+            setCartItems(formattedItems);
+        } catch (err) {
+            console.error('獲取購物車失敗:', err);
+            setError('無法載入購物車，請稍後再試。');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!authLoading) {
+            if (isAuthenticated) {
+                fetchCart();
+            } else {
+                navigate(ROUTES.LOGIN);
+            }
+        }
+    }, [isAuthenticated, authLoading, navigate]);
 
     /**
      * 計算購物車統計信息
      */
     const calculateCartStats = () => {
-        const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        const discount = Math.floor(subtotal * 0.1); // 模擬 10% 折扣
+        const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const discount = 0;
         const total = subtotal - discount;
 
         return { subtotal, discount, total };
@@ -82,27 +82,45 @@ const Cart = () => {
     /**
      * 更新商品數量
      */
-    const handleQuantityChange = (itemId, newQuantity) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-        );
+    const handleQuantityChange = async (cartItemId, newQuantity) => {
+        if (newQuantity < 1) return;
+
+        try {
+            await CartService.updateCartItemQuantity(cartItemId, newQuantity);
+            setCartItems(prevItems =>
+                prevItems.map(item =>
+                    item.id === cartItemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
+        } catch (err) {
+            console.error('更新數量失敗:', err);
+            alert('更新數量失敗');
+        }
     };
 
     /**
      * 刪除購物車項目
      */
-    const handleRemoveItem = (itemId) => {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    const handleRemoveItem = async (cartItemId) => {
+        if (!window.confirm('確定要將此商品從購物車移除嗎？')) return;
+
+        try {
+            await CartService.removeCartItem(cartItemId);
+            setCartItems(prevItems => prevItems.filter(item => item.id !== cartItemId));
+        } catch (err) {
+            console.error('刪除項目失敗:', err);
+            alert('刪除失敗');
+        }
     };
 
     /**
      * 結帳處理
      */
     const handleCheckout = () => {
-        // 預留空間：實際結帳功能將在此實現
-        console.log('前往結帳頁面');
+        if (cartItems.length === 0) {
+            alert('購物車是空的喔！');
+            return;
+        }
         navigate('/checkout');
     };
 
@@ -113,8 +131,25 @@ const Cart = () => {
         navigate(-1);
     };
 
+    if (authLoading || loading) {
+        return (
+            <div className="cart">
+                <Header variant="cart" />
+                <div className="cart__loading" style={{ padding: '100px', textAlign: 'center' }}>載入中...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="cart">
+                <Header variant="cart" />
+                <div className="cart__error" style={{ padding: '100px', textAlign: 'center', color: 'red' }}>{error}</div>
+            </div>
+        );
+    }
+
     const stats = calculateCartStats();
-    const selectedItemsCount = cartItems.length;
 
     return (
         <div className="cart">
@@ -126,21 +161,6 @@ const Cart = () => {
                     </svg>
                 </button>
                 <h1 className="cart__title">購物車</h1>
-                <div className="cart__header-icons">
-                    <button className="cart__icon cart__icon--help" aria-label="幫助">
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                            <path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.7c-.8.6-1.3 1-1.3 2.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            <circle cx="12" cy="17" r="1" fill="currentColor" />
-                        </svg>
-                    </button>
-                    <button className="cart__icon cart__icon--user" aria-label="用戶">
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
-                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
-                    </button>
-                </div>
             </header>
 
             {/* 導航欄 */}
@@ -168,8 +188,8 @@ const Cart = () => {
                             />
                         ))
                     ) : (
-                        <div style={{ padding: '30px', textAlign: 'center', color: '#999' }}>
-                            購物車為空
+                        <div className="cart__empty" style={{ padding: '50px', textAlign: 'center', color: '#999' }}>
+                            您的購物車目前沒有商品
                         </div>
                     )}
                 </div>
@@ -188,12 +208,8 @@ const Cart = () => {
             {/* 底部欄 - 行動版 */}
             {cartItems.length > 0 && (
                 <footer className="cart-footer-mobile">
-                    <label className="cart-footer-mobile__select-all">
-                        <input type="checkbox" id="select-all" className="cart-footer-mobile__checkbox" />
-                        <label htmlFor="select-all" className="cart-footer-mobile__checkbox-label"></label>
-                        全部
-                    </label>
                     <div className="cart-footer-mobile__info">
+                        <div className="cart-footer-mobile__total-label">總計</div>
                         <span className="cart-footer-mobile__price">${stats.total}</span>
                         <button className="cart-footer-mobile__btn" onClick={handleCheckout}>
                             下一步
@@ -202,7 +218,6 @@ const Cart = () => {
                 </footer>
             )}
         </div>
-
     );
 };
 
