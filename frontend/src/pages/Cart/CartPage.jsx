@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import './CartPage.scss';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Header from '../../components/layout/Header/Header.jsx';
 import CartItem from "./CartItem.jsx";
 import CartSummary from "./CartSummary.jsx";
 import CartService from '../../services/cartService';
-import { useAuth } from '../../contexts/AuthContext';
-import { ROUTES } from '../../constants/routes';
+import {useAuth} from '../../contexts/AuthContext';
+import {ROUTES} from '../../constants/routes';
 
 const Cart = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const {isAuthenticated, loading: authLoading} = useAuth();
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,12 +20,11 @@ const Cart = () => {
         try {
             setLoading(true);
             const data = await CartService.getCart();
-            console.log('後端回傳的購物車原始資料:', data);
 
             // 根據 Console 截圖，資料結構為 { id: 5, items: [...], totalAmount: 299 }
             const rawItems = data.items || [];
 
-            const formattedItems = rawItems.map(({ id, quantity = 1, productVariant = {} }) => {
+            const formattedItems = rawItems.map(({id, quantity = 1, productVariant = {}}) => {
                 //預防出現沒有讀取到商品資料
                 const {
                     id: variantId,
@@ -48,7 +47,6 @@ const Cart = () => {
                 };
             });
 
-            console.log('格式化後的購物車資料:', formattedItems);
             setCartItems(formattedItems);
         } catch (err) {
             console.error('獲取購物車失敗:', err);
@@ -76,7 +74,7 @@ const Cart = () => {
         const discount = 0;
         const total = subtotal - discount;
 
-        return { subtotal, discount, total };
+        return {subtotal, discount, total};
     };
 
     /**
@@ -89,7 +87,7 @@ const Cart = () => {
             await CartService.updateCartItemQuantity(cartItemId, newQuantity);
             setCartItems(prevItems =>
                 prevItems.map(item =>
-                    item.id === cartItemId ? { ...item, quantity: newQuantity } : item
+                    item.id === cartItemId ? {...item, quantity: newQuantity} : item
                 )
             );
         } catch (err) {
@@ -134,8 +132,8 @@ const Cart = () => {
     if (authLoading || loading) {
         return (
             <div className="cart">
-                <Header variant="cart" />
-                <div className="cart__loading" style={{ padding: '100px', textAlign: 'center' }}>載入中...</div>
+                <Header variant="cart"/>
+                <div className="cart__loading" style={{padding: '100px', textAlign: 'center'}}>載入中...</div>
             </div>
         );
     }
@@ -143,8 +141,8 @@ const Cart = () => {
     if (error) {
         return (
             <div className="cart">
-                <Header variant="cart" />
-                <div className="cart__error" style={{ padding: '100px', textAlign: 'center', color: 'red' }}>{error}</div>
+                <Header variant="cart"/>
+                <div className="cart__error" style={{padding: '100px', textAlign: 'center', color: 'red'}}>{error}</div>
             </div>
         );
     }
@@ -156,7 +154,8 @@ const Cart = () => {
             {/* 頁面頭部 - 行動版 */}
             <header className="cart__header">
                 <button className="cart__back-btn" onClick={handleGoBack} aria-label="返回">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                         strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
@@ -164,7 +163,7 @@ const Cart = () => {
             </header>
 
             {/* 導航欄 */}
-            <Header variant="cart" />
+            <Header variant="cart"/>
 
             <main className="cart__container">
                 {/* 桌機版表頭 */}
@@ -188,7 +187,7 @@ const Cart = () => {
                             />
                         ))
                     ) : (
-                        <div className="cart__empty" style={{ padding: '50px', textAlign: 'center', color: '#999' }}>
+                        <div className="cart__empty" style={{padding: '50px', textAlign: 'center', color: '#999'}}>
                             您的購物車目前沒有商品
                         </div>
                     )}

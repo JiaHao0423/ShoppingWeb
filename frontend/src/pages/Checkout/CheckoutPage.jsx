@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header/Header.jsx';
-import Footer from '../../components/layout/Footer/Footer.jsx';
+import CartService from '../../services/cartService';
+import OrderService from '../../services/orderService';
 import './CheckoutPage.scss';
-import {CameraIcon} from '../../components/Icons/Icons.jsx';
+import { CameraIcon } from '../../components/Icons/Icons.jsx';
 import { ROUTES } from '../../constants/routes.js';
+import Footer from "../../components/layout/Footer/Footer.jsx";
 
 /**
  * Checkout 頁面元件
@@ -12,38 +14,44 @@ import { ROUTES } from '../../constants/routes.js';
  */
 const CheckoutPage = () => {
     const navigate = useNavigate();
+    const [cartItems, setCartItems] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    // 狀態管理
     const [paymentMethod, setPaymentMethod] = useState('credit');
     const [shippingMethod, setShippingMethod] = useState('home');
 
-    // 模擬訂單商品資料
-    const orderItems = [
-        {
-            id: 1,
-            name: '女士短版襯衫',
-            price: 590,
-            quantity: 1,
-            img: 'https://media.istockphoto.com/id/1360648166/photo/classic-business-style-of-clothing.webp?a=1&b=1&s=612x612&w=0&k=20&c=QZrzfDc1WmpfW7gVgPAvNXnmFmylvhtmrHito_6ogFE=',
-        },
-        {
-            id: 2,
-            name: '高腰牛仔褲',
-            price: 590,
-            quantity: 1,
-            img: 'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=600&auto=format&fit=crop&q=60',
-        },
-        {
-            id: 3,
-            name: '簡約白色T恤',
-            price: 590,
-            quantity: 1,
-            img: 'https://plus.unsplash.com/premium_photo-1691367279139-218a8b8dcbb3?w=600&auto=format&fit=crop&q=60',
-        },
-    ];
+    // 1. 獲取真實購物車資料
+    useEffect(() => {
+        const fetchCheckoutData = async () => {
+            try {
+                setLoading(true);
+                const data = await CartService.getCart();
 
-    const subtotal = 590;
-    const shipping = 590;
-    const discount = 590;
-    const total = 590;
+                // 根據後端 DTO 結構進行 Mapping
+                const rawItems = data.items || [];
+                const formattedItems = rawItems.map(item => ({
+                    id: item.id,
+                    name: item.productVariant?.productName || '未命名商品',
+                    price: Number(item.productVariant?.price) || 0,
+                    quantity: item.quantity,
+                    img: item.productVariant?.imageUrl || 'https://via.placeholder.com/150',
+                    color: item.productVariant?.color,
+                    size: item.productVariant?.size
+                } ));
+
+                setCartItems(formattedItems);
+                setTotalAmount(data.totalAmount || 0);
+            } catch (err) {
+                console.error('獲取結帳資料失敗:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCheckoutData();
+    }, []);
+
 
     /**
      * 返回上一頁
@@ -55,9 +63,31 @@ const CheckoutPage = () => {
     /**
      * 結帳處理
      */
-    const handleCheckout = () => {
-        navigate(ROUTES.ORDER_COMPLETE);
+    const handleCheckout = async () => {
+        if (cartItems.length === 0) {
+            alert('購物車內無商品');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            // 組合運送地址資訊 (這裡可以根據您的 UI 需求調整)
+            const finalAddress = shippingAddress || "預設地址 (請於表單填寫)";
+
+            // 呼叫後端 API: POST /api/orders
+            await OrderService.createOrder(finalAddress, paymentMethod.toUpperCase());
+
+            alert('訂單已成功建立！');
+            navigate(ROUTES.ORDER_COMPLETE || '/orders');
+        } catch (err) {
+            console.error('下單失敗:', err);
+            alert('下單失敗，請檢查資訊是否完整');
+        } finally {
+            setSubmitting(false);
+        }
     };
+
+    if (loading) return <div className="checkout__loading">載入中...</div>;
 
     return (
         <div className="checkout">
@@ -365,7 +395,7 @@ const CheckoutPage = () => {
 
                     {/* 商品列表 */}
                     <div className="checkout-summary__product-list">
-                        {orderItems.map((item) => (
+                        {cartItems.map((item) => (
                             <div className="checkout-product" key={item.id}>
                                 <img
                                     className="checkout-product__img"
@@ -385,15 +415,15 @@ const CheckoutPage = () => {
                     <div className="checkout-summary__details">
                         <div className="checkout-summary__row">
                             <span>小計</span>
-                            <span>${subtotal}</span>
+                            <span>${totalAmount}</span>
                         </div>
                         <div className="checkout-summary__row">
                             <span>運費</span>
-                            <span>${shipping}</span>
+                            <span>0</span>
                         </div>
                         <div className="checkout-summary__row">
                             <span>折扣</span>
-                            <span>${discount}</span>
+                            <span>0</span>
                         </div>
                     </div>
 
@@ -402,7 +432,7 @@ const CheckoutPage = () => {
                         <hr className="checkout-summary__divider" />
                         <div className="checkout-summary__row checkout-summary__row--total">
                             <span>總結</span>
-                            <span className="checkout-summary__total-price">${total}</span>
+                            <span className="checkout-summary__total-price">${totalAmount}</span>
                         </div>
                         <button
                             className="checkout-summary__next-btn"
@@ -418,7 +448,7 @@ const CheckoutPage = () => {
             <footer className="checkout-footer">
                 <span className="checkout-footer__label">總結</span>
                 <div className="checkout-footer__right">
-                    <span className="checkout-footer__price">${total}</span>
+                    <span className="checkout-footer__price">${totalAmount}</span>
                     <button className="checkout-footer__btn" onClick={handleCheckout}>
                         結帳
                     </button>
