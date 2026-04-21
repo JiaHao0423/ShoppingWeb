@@ -5,7 +5,7 @@ import CartPage from "./pages/Cart/CartPage.jsx";
 import CheckoutPage from "./pages/Checkout/CheckoutPage.jsx";
 import OrderCompletePage from "./pages/OrderCompletePage/OrderCompletePage.jsx";
 import MemberPage from "./pages/MemberPage/MemberPage.jsx";
-import OrderListPage from "./pages/OrderList/OrderList.jsx";
+import OrderListPage from "./pages/OrderList/OrderListPage.jsx";
 import AuthPage from "./pages/AuthPage/AuthPage.jsx";
 import ProductDetailPage from "./pages/ProductDetail/ProductDetailPage.jsx";
 import React from 'react';
