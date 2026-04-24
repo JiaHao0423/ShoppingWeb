@@ -11,7 +11,7 @@ const apiClient = axios.create({
 // 請求攔截器：在每個請求中加入 JWT Token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('jwtToken'); // 從 localStorage 獲取 Token
+        const token = localStorage.getItem('token'); // 從 localStorage 獲取 Token
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -33,7 +33,7 @@ apiClient.interceptors.response.use(
             console.error('Token 已失效或權限不足，正在清理登入狀態...');
 
             // 清除 localStorage 中的 Token
-            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('token');
 
             // 💡 建議：如果是在首頁等公開頁面，可以只清除 Token 不跳轉
             // 如果是在需要權限的頁面，則強制跳轉到登入頁

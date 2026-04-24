@@ -30,9 +30,6 @@ const OrderListPage = () => {
                 setLoading(true);
                 const data = await OrderService.getOrders();
 
-                console.log(data);
-                // console.log(data[0].items[0].productVariant.imageUrl);
-
                 // 將後端資料轉換為您 UI 預期的格式
                 const formattedOrders = data.map(order => ({
                     id: order.id.toString(),
@@ -47,8 +44,6 @@ const OrderListPage = () => {
                     // 根據狀態動態生成按鈕 (範例)
                     actions: getActionsByStatus(order.status)
                 }));
-
-                console.log(formattedOrders);
 
                 setOrders(formattedOrders);
             } catch (err) {
@@ -160,8 +155,8 @@ const OrderListPage = () => {
                             {filteredOrders.length === 0 ? (
                                 <div className="order-list__empty">目前沒有相關訂單</div>
                             ) : (
-                                filteredOrders.map((order, idx) => (
-                                    <article key={idx} className="order-list__order">
+                                filteredOrders.map((order) => (
+                                    <article key={order.id} className="order-list__order">
                                         {/* 行動版：訂單標題列 */}
                                         <div className="order-list__order-header">
                                             <span className="order-list__order-header-id">訂單編號：{order.id}</span>
@@ -174,7 +169,7 @@ const OrderListPage = () => {
                                         {/* 行動版：商品圖片橫向捲動 */}
                                         <div className="order-list__order-items-mobile">
                                             {order.items.map((item, i) => (
-                                                <div key={i} className="order-list__order-item-card">
+                                                <div key={`${order.id}-mobile-${item.img}-${i}`} className="order-list__order-item-card">
                                                     <img className="order-list__order-item-img" src={item.img}
                                                          alt="商品"/>
                                                     <span
@@ -188,7 +183,7 @@ const OrderListPage = () => {
                                             <span className="order-list__order-id">{order.id}</span>
                                             <div className="order-list__order-images">
                                                 {order.items.map((item, i) => (
-                                                    <img key={i} className="order-list__order-thumb" src={item.img}
+                                                    <img key={`${order.id}-desktop-${item.img}-${i}`} className="order-list__order-thumb" src={item.img}
                                                          alt="商品"/>
                                                 ))}
                                             </div>
@@ -203,7 +198,7 @@ const OrderListPage = () => {
                                         <div className="order-list__order-actions">
                                             {order.actions.map((action, ai) => (
                                                 <button
-                                                    key={ai}
+                                                    key={`${order.id}-${action.label}-${ai}`}
                                                     className={`order-list__action-btn order-list__action-btn--${action.variant}`}
                                                 >
                                                     {action.label}

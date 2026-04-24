@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
 
     // 檢查是否已認證
     const isLoggedIn = () => {
-        return isAuthenticated && !!localStorage.getItem('jwtToken');
+        return isAuthenticated && !!localStorage.getItem('token');
     };
 
     const value = {

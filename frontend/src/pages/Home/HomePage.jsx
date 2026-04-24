@@ -3,7 +3,6 @@ import DefaultLayout from "../../components/layout/DefaultLayout.jsx";
 import Carousel from "../../components/carousel/Carousel.jsx";
 import ProductSection from "../../components/productSection/ProductSection.jsx";
 import ProductService from '../../services/productService.js';
-import { Link } from 'react-router-dom';
 
 
 const HomePage = () => {
@@ -18,7 +17,6 @@ const HomePage = () => {
                 setLoading(true);
                 // 獲取第一頁的商品，每頁 8 個
                 const response = await ProductService.getProducts(null, 0, 8);
-                console.log(response);
                 setProducts(response.content);
             } catch (err) {
                 setError('取得產品資訊失敗，請稍後再試。');
@@ -26,7 +24,6 @@ const HomePage = () => {
             } finally {
                 setLoading(false);
             }
-            // 123
         };
 
         fetchProducts();

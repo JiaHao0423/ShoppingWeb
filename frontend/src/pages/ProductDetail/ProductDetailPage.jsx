@@ -33,7 +33,6 @@ const ProductDetailPage = () => {
             try {
                 setLoading(true);
                 const data = await ProductService.getProductById(id);
-                console.log('商品原始資料 (含規格):', data); // ✅ Debug Log
                 setProduct(data);
                 setActiveImage(data.imageUrl || data.image);
 
@@ -68,11 +67,8 @@ const ProductDetailPage = () => {
     // 強制連動邏輯：當顏色改變時，如果當前尺寸不可用，自動切換
     useEffect(() => {
         if (product && selectedColor) {
-            console.log(`切換顏色至: ${selectedColor}, 可用尺寸:`, availableSizesForCurrentColor);
-
             if (!availableSizesForCurrentColor.includes(selectedSize)) {
                 if (availableSizesForCurrentColor.length > 0) {
-                    console.log(`尺寸 ${selectedSize} 不可用，自動切換至: ${availableSizesForCurrentColor[0]}`);
                     setSelectedSize(availableSizesForCurrentColor[0]);
                 } else {
                     setSelectedSize(null);

@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header/Header.jsx';
 import Footer from '../../components/layout/Footer/Footer.jsx';
-import {ROUTES} from '../../constants/routes.js';
+import { ROUTES } from '../../constants/routes.js';
+import { useAuth } from '../../contexts/AuthContext';
 import './MemberPage.scss';
-import {useAuth} from "../../contexts/AuthContext.jsx";
 
 // ==================== 模擬資料 ====================
 
@@ -412,13 +412,13 @@ const MemberPage = () => {
 
                                 {/* 訂單列 */}
                                 {RECENT_ORDERS.map((order, idx) => (
-                                    <div key={idx} className="member-page__order-row">
+                                    <div key={`${order.id}-${order.statusKey}-${idx}`} className="member-page__order-row">
                                         <div className="member-page__order-row-main">
                                             <span className="member-page__order-id">{order.id}</span>
                                             <div className="member-page__order-images">
                                                 {order.images.map((img, i) => (
                                                     <img
-                                                        key={i}
+                                                        key={`${order.id}-${img}-${i}`}
                                                         className="member-page__order-img"
                                                         src={img}
                                                         alt={`訂單商品 ${i + 1}`}
@@ -434,7 +434,7 @@ const MemberPage = () => {
                                         <div className="member-page__order-actions">
                                             {order.actions.map((action, ai) => (
                                                 <button
-                                                    key={ai}
+                                                    key={`${order.id}-${action.label}-${ai}`}
                                                     className={`member-page__order-action-btn member-page__order-action-btn--${action.variant}`}
                                                 >
                                                     {action.label}
