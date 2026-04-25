@@ -1,0 +1,25 @@
+/**
+ * 集中管理所有路由路徑，便於維護和重構
+ */
+export const ROUTES = {
+  HOME: "/home",
+  SEARCH: "/search",
+  CART: "/cart",
+  MEMBER: "/member",
+
+  LOGIN: "/login",
+  REGISTER: "/register",
+  PROFILE: "/member/profile",
+  ORDERS: "/orders",
+  WISHLIST: "/member/wishlist",
+
+  CHECKOUT: "/checkout",
+  ORDER_COMPLETE: "/order-complete",
+  ABOUT: "/about",
+  CONTACT: "/contact",
+} as const;
+
+/**
+ * 根據 URL 參數生成搜尋路由
+ */
+export const getSearchRoute = (query: string): string => `${ROUTES.SEARCH}?q=${encodeURIComponent(query)}`;
