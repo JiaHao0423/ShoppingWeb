@@ -1,9 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
+import { Toaster } from "./components/ui/toaster";
+import { ConfirmModalProvider } from "./components/ui/confirm-modal";
 
 const HomePage = lazy(() => import("./pages/Home/HomePage"));
 const SearchPage = lazy(() => import("./pages/Search/SearchPage"));
@@ -20,12 +21,8 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 2500,
-            }}
-          />
+          <Toaster />
+          <ConfirmModalProvider />
           <Suspense fallback={<div>載入中...</div>}>
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />

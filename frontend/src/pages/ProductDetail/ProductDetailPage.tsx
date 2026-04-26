@@ -5,6 +5,7 @@ import CartService from "../../services/cartService";
 import DefaultLayout from "../../components/layout/DefaultLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { ROUTES } from "../../constants/routes";
+import notify from "../../utils/notify";
 import "./ProductDetailPage.scss";
 
 type Variant = {
@@ -98,7 +99,7 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      alert("請先登入會員");
+      notify.info("請先登入會員");
       navigate(ROUTES.LOGIN);
       return;
     }
@@ -106,16 +107,16 @@ const ProductDetailPage = () => {
     const variant = product?.variants.find((v) => v.color === selectedColor && v.size === selectedSize);
 
     if (!variant || variant.stock <= 0) {
-      alert("該規格目前缺貨中");
+      notify.error("該規格目前缺貨中");
       return;
     }
 
     try {
       await CartService.addOrUpdateCartItem(variant.id, quantity);
-      alert("已成功加入購物車！");
+      notify.success("已成功加入購物車！");
     } catch (err) {
       console.error("加入購物車失敗:", err);
-      alert("加入購物車失敗，請稍後再試。");
+      notify.error("加入購物車失敗，請稍後再試。");
     }
   };
 

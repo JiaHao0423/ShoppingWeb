@@ -105,7 +105,13 @@ const Cart = () => {
   };
 
   const handleRemoveItem = async (cartItemId: number | string) => {
-    if (!notify.confirm("確定要將此商品從購物車移除嗎？")) return;
+    const confirmed = await notify.confirm("確定要將此商品從購物車移除嗎？", {
+      title: "刪除商品",
+      confirmText: "刪除",
+      cancelText: "保留",
+      variant: "destructive",
+    });
+    if (!confirmed) return;
 
     try {
       await CartService.removeCartItem(cartItemId);
