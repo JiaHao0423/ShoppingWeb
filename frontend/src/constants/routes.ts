@@ -9,6 +9,8 @@ export const ROUTES = {
 
   LOGIN: "/login",
   REGISTER: "/register",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
   PROFILE: "/member/profile",
   ORDERS: "/orders",
   WISHLIST: "/member/wishlist",

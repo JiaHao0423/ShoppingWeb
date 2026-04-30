@@ -22,16 +22,48 @@ apiClient.interceptors.request.use(
 // 回應攔截器：處理錯誤，例如 Token 過期
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.error("Token 已失效或權限不足，正在清理登入狀態...");
+  async (error: AxiosError) => {
+    const originalRequest = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
+    const refreshToken = localStorage.getItem("refreshToken");
 
+    if (
+      originalRequest &&
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      refreshToken &&
+      !String(originalRequest.url ?? "").includes("/auth/refresh")
+    ) {
+      originalRequest._retry = true;
+      try {
+        const refreshResponse = await axios.post<{ token?: string; refreshToken?: string }>(
+          `${apiClient.defaults.baseURL}/auth/refresh`,
+          { refreshToken }
+        );
+
+        const newAccessToken = refreshResponse.data.token;
+        const newRefreshToken = refreshResponse.data.refreshToken;
+
+        if (newAccessToken) {
+          localStorage.setItem("token", newAccessToken);
+          if (newRefreshToken) {
+            localStorage.setItem("refreshToken", newRefreshToken);
+          }
+          originalRequest.headers = originalRequest.headers ?? {};
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return apiClient(originalRequest);
+        }
+      } catch (refreshError) {
+        console.error("Refresh token 失敗，請重新登入", refreshError);
+      }
+    }
+
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userRoles");
 
       if (window.location.pathname !== "/" && !window.location.pathname.startsWith("/product")) {
         window.location.href = "/login";
-      } else {
-        window.location.reload();
       }
     }
     return Promise.reject(error);

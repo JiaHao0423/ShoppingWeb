@@ -22,6 +22,23 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:false}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT:2000ms}
 
 
   # Logging Configuration
@@ -47,9 +64,31 @@ springdoc:
 
     # JWT Configuration
 app:
+  frontend:
+    base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
+  mail:
+    provider: ${MAIL_PROVIDER:resend}
+    from: ${MAIL_FROM:ShoppingWeb <onboarding@resend.dev>}
+    allow-fallback-log-link: ${MAIL_ALLOW_FALLBACK_LOG_LINK:false}
+    resend:
+      api-url: ${RESEND_API_URL:https://api.resend.com/emails}
+      api-key: ${RESEND_API_KEY:}
+      fallback-from: ${RESEND_FALLBACK_FROM:ShoppingWeb <onboarding@resend.dev>}
+  upload:
+    avatar:
+      max-size-mb: ${AVATAR_MAX_SIZE_MB:2}
+      allowed-extensions: ${AVATAR_ALLOWED_EXTENSIONS:jpg,jpeg,png,webp}
   jwt:
     secret: ShoppingWeb0423JWW9uZ29kYmFkbWluMTIzNDU2Nzg5MDEyMzQ1Njc4
     expiration: 900000 #15 minutes
     refresh-expiration: 86400000 #24 hours
+  security:
+    rate-limit:
+      forgot:
+        max-attempts: ${FORGOT_RATE_LIMIT_MAX_ATTEMPTS:5}
+        window-minutes: ${FORGOT_RATE_LIMIT_WINDOW_MINUTES:15}
+      reset:
+        max-attempts: ${RESET_RATE_LIMIT_MAX_ATTEMPTS:8}
+        window-minutes: ${RESET_RATE_LIMIT_WINDOW_MINUTES:15}
 
 

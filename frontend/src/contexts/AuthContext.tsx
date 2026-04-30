@@ -3,6 +3,7 @@ import AuthService from "../services/authService";
 
 type AuthUser = {
   token: string;
+  refreshToken?: string;
   roles: string[];
 };
 
@@ -19,8 +20,9 @@ type AuthContextValue = {
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const token = localStorage.getItem("token");
+const refreshToken = localStorage.getItem("refreshToken");
 const roles = localStorage.getItem("userRoles");
-const initialUser = token && roles ? { token, roles: JSON.parse(roles) as string[] } : null;
+const initialUser = token && roles ? { token, refreshToken: refreshToken ?? undefined, roles: JSON.parse(roles) as string[] } : null;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialUser));

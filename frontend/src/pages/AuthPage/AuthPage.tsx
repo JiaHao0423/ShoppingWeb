@@ -157,6 +157,7 @@ const AuthPage = ({ variant = "login" }: AuthPageProps) => {
         const response = await AuthService.login(formData.account, formData.password);
         login({
           token: response.token ?? "",
+          refreshToken: response.refreshToken,
           roles: response.roles ?? [],
         });
         navigate("/");

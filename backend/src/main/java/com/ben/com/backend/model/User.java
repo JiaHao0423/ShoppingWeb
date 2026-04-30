@@ -57,6 +57,23 @@ public class User implements UserDetails {
 
   private Boolean gender;
 
+  private String avatarUrl;
+
+  @Column(nullable = false)
+  private String memberLevel;
+
+  @Column(name = "refresh_token", length = 512)
+  private String refreshToken;
+
+  @Column(name = "refresh_token_expires_at")
+  private LocalDateTime refreshTokenExpiresAt;
+
+  @Column(name = "password_reset_token", length = 512)
+  private String passwordResetToken;
+
+  @Column(name = "password_reset_expires_at")
+  private LocalDateTime passwordResetExpiresAt;
+
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;

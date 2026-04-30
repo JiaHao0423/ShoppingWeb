@@ -31,4 +31,6 @@ public class UserUpdateRequest {
   private LocalDate birthday;
 
   private Boolean gender;
+
+  private String avatarUrl;
 }

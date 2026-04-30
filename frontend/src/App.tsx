@@ -15,6 +15,7 @@ const MemberPage = lazy(() => import("./pages/MemberPage/MemberPage"));
 const OrderListPage = lazy(() => import("./pages/OrderList/OrderListPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage/AuthPage"));
 const ProductDetailPage = lazy(() => import("./pages/ProductDetail/ProductDetailPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPassword/ForgotPasswordPage"));
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
               <Route path="/register" element={<AuthPage variant="register" />} />
               <Route path="/login" element={<AuthPage variant="login" />} />
               <Route path="/simple-login" element={<AuthPage variant="simple-login" />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ForgotPasswordPage />} />
 
               {/* 保護路由 */}
               <Route
