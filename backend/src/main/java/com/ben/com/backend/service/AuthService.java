@@ -56,7 +56,10 @@ public class AuthService {
     return AuthResponse.builder()
       .token(jwtService.generateToken(user))
       .refreshToken(refreshToken)
-      .roles(Arrays.stream(user.getRoles().split(",")).toList())
+      .roles(Arrays.stream(user.getRoles().split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .toList())
       .build();
   }
 
@@ -80,7 +83,10 @@ public class AuthService {
     return AuthResponse.builder()
       .token(jwtService.generateToken(user))
       .refreshToken(newRefreshToken)
-      .roles(Arrays.stream(user.getRoles().split(",")).toList())
+      .roles(Arrays.stream(user.getRoles().split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .toList())
       .build();
   }
 

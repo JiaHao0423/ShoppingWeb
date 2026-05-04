@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const refreshResponse = await axios.post<{ token?: string; refreshToken?: string }>(
+        const refreshResponse = await axios.post<{ token?: string; refreshToken?: string; roles?: string[] }>(
           `${apiClient.defaults.baseURL}/auth/refresh`,
           { refreshToken }
         );
@@ -47,6 +47,10 @@ apiClient.interceptors.response.use(
           localStorage.setItem("token", newAccessToken);
           if (newRefreshToken) {
             localStorage.setItem("refreshToken", newRefreshToken);
+          }
+          const refreshedRoles = refreshResponse.data.roles;
+          if (refreshedRoles != null) {
+            localStorage.setItem("userRoles", JSON.stringify(refreshedRoles));
           }
           originalRequest.headers = originalRequest.headers ?? {};
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;

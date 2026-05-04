@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -84,7 +84,9 @@ public class User implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Set.of(this.roles.split(",")).stream()
+    return Arrays.stream(this.roles.split(","))
+      .map(String::trim)
+      .filter(s -> !s.isEmpty())
       .map(SimpleGrantedAuthority::new)
       .collect(Collectors.toList());
   }

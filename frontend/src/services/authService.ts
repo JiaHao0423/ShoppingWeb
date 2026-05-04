@@ -64,6 +64,9 @@ const AuthService = {
     if (response.data.refreshToken) {
       localStorage.setItem("refreshToken", response.data.refreshToken);
     }
+    if (response.data.roles != null) {
+      localStorage.setItem("userRoles", JSON.stringify(response.data.roles));
+    }
     return response.data;
   },
 

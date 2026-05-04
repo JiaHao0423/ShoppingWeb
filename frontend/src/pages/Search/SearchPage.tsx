@@ -1,7 +1,9 @@
-import { ComponentType, useState } from "react";
+import { ComponentType, useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import DefaultLayout from "../../components/layout/DefaultLayout";
 import ProductSection from "../../components/productSection/ProductSection";
 import Sidebar from "../../components/sidebar/Sidebar";
+import ProductService from "../../services/productService";
 import "./SearchPage.scss";
 
 type Filters = {
@@ -15,7 +17,8 @@ type Product = {
   id: number;
   name: string;
   price: number;
-  category: string;
+  categoryId: string;
+  categoryName: string;
   color: string;
   size: string;
   image: string;
@@ -23,28 +26,96 @@ type Product = {
 };
 
 const SearchPage = () => {
+  const { categorySlug } = useParams<{ categorySlug?: string }>();
+  const [searchParams] = useSearchParams();
+  const categoryIdFromQuery = searchParams.get("categoryId") ?? "";
+  const categoryFromQuery = searchParams.get("category") ?? "";
+  const keyword = (searchParams.get("q") ?? "").trim().toLowerCase();
+
+  const categoryFromSlugMap: Record<string, string> = {
+    "t-shirt": "tops",
+    shirt: "tops",
+    sweater: "tops",
+    jeans: "bottoms",
+    shorts: "bottoms",
+    skirt: "bottoms",
+    dresses: "dresses",
+    jumpsuit: "dresses",
+    jackets: "outerwear",
+    "sunscreen-clothing": "outerwear",
+  };
+
+  const resolvedInitialCategory = useMemo(() => {
+    if (categoryIdFromQuery) return categoryIdFromQuery;
+    if (categoryFromQuery) return categoryFromQuery;
+    if (!categorySlug) return "";
+    return categoryFromSlugMap[categorySlug] ?? "";
+  }, [categoryIdFromQuery, categoryFromQuery, categorySlug]);
+
   const [filters, setFilters] = useState<Filters>({
-    category: "",
+    category: resolvedInitialCategory,
     color: "",
     size: "",
     priceRange: [0, 10000],
   });
-  const TypedProductSection = ProductSection as unknown as ComponentType<{ title?: string; products?: any[]; viewAllLink?: string }>;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<Array<{ value: string; label: string }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const allProducts: Product[] = [
-    { id: 1, name: "女士短袖襯衫", price: 590, category: "tops", color: "white", size: "m", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=800&fit=crop", isHot: true },
-    { id: 2, name: "女士連帽外套", price: 1290, category: "outerwear", color: "black", size: "l", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&h=800&fit=crop", isHot: false },
-    { id: 3, name: "女士寬鬆襯衫", price: 690, category: "tops", color: "blue", size: "s", image: "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=600&h=800&fit=crop", isHot: true },
-    { id: 4, name: "女士吊帶背心", price: 490, category: "tops", color: "black", size: "m", image: "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=600&h=800&fit=crop", isHot: false },
-    { id: 5, name: "女士針織外套", price: 1590, category: "outerwear", color: "green", size: "l", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=800&fit=crop", isHot: false },
-    { id: 6, name: "女士長袖上衣", price: 650, category: "tops", color: "white", size: "s", image: "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=600&h=800&fit=crop", isHot: true },
-    { id: 7, name: "女士套裝外套", price: 1990, category: "outerwear", color: "red", size: "xl", image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=800&fit=crop", isHot: false },
-    { id: 8, name: "女士休閒襯衫", price: 590, category: "tops", color: "blue", size: "m", image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=600&h=800&fit=crop", isHot: true },
-    { id: 9, name: "女士連身裙", price: 1890, category: "dresses", color: "red", size: "m", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=800&fit=crop", isHot: false },
-    { id: 10, name: "女士長裙", price: 990, category: "bottoms", color: "black", size: "s", image: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=600&h=800&fit=crop", isHot: true },
-    { id: 11, name: "女士牛仔褲", price: 790, category: "bottoms", color: "blue", size: "m", image: "https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=600&h=800&fit=crop", isHot: false },
-    { id: 12, name: "女士短褲", price: 490, category: "bottoms", color: "white", size: "s", image: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=600&h=800&fit=crop", isHot: true },
-  ];
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, category: resolvedInitialCategory }));
+  }, [resolvedInitialCategory]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchSearchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [categoriesResponse, productsResponse] = (await Promise.all([
+          ProductService.getAllCategories(),
+          ProductService.getProducts(null, 0, 200, controller.signal),
+        ])) as [
+          Array<{ id: number; name: string }>,
+          { content?: Array<{ id: number; name: string; price: number | string; imageUrl?: string; category?: { id: number; name: string } }> }
+        ];
+
+        const normalizedCategories = categoriesResponse.map((category) => ({
+          value: String(category.id),
+          label: category.name,
+        }));
+        setCategoryOptions(normalizedCategories);
+
+        const normalizedProducts: Product[] = (productsResponse.content ?? []).map((product) => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          categoryId: String(product.category?.id ?? ""),
+          categoryName: product.category?.name ?? "",
+          color: "",
+          size: "",
+          image: product.imageUrl ?? "https://via.placeholder.com/200",
+          isHot: false,
+        }));
+        setProducts(normalizedProducts);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        console.error("Error fetching search data:", err);
+        setError("取得商品資訊失敗，請稍後再試。");
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchSearchData();
+    return () => controller.abort();
+  }, []);
+  const TypedProductSection = ProductSection as unknown as ComponentType<{ title?: string; products?: any[]; viewAllLink?: string }>;
 
   const handleFilterChange = (newFilters: Partial<Filters> & { reset?: boolean }) => {
     if (newFilters.reset) {
@@ -54,21 +125,37 @@ const SearchPage = () => {
     }
   };
 
-  const filteredProducts = allProducts.filter((product) => {
-    if (filters.category && product.category !== filters.category) return false;
+  const filteredProducts = products.filter((product) => {
+    if (filters.category && product.categoryId !== filters.category) return false;
     if (filters.color && product.color !== filters.color) return false;
     if (filters.size && product.size !== filters.size) return false;
+    if (keyword && !product.name.toLowerCase().includes(keyword)) return false;
     return !(product.price < filters.priceRange[0] || product.price > filters.priceRange[1]);
   });
+
+  const pageTitle = useMemo(() => {
+    if (keyword) return `搜尋結果：${searchParams.get("q")}`;
+    const currentCategory = categoryOptions.find((option) => option.value === filters.category);
+    if (currentCategory) return `${currentCategory.label}分類`;
+    return "全部商品";
+  }, [filters.category, keyword, searchParams, categoryOptions]);
+
+  if (loading) {
+    return <div>載入中...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: "red" }}>{error}</div>;
+  }
 
   return (
     <DefaultLayout variant="search">
       <div className="search-page">
         <div className="search-page__layout">
-          <Sidebar onFilterChange={handleFilterChange} />
+          <Sidebar onFilterChange={handleFilterChange} categories={categoryOptions} />
           <div className="search-page__main">
             {filteredProducts.length > 0 ? (
-              <TypedProductSection title="" products={filteredProducts} viewAllLink="#" />
+              <TypedProductSection title={pageTitle} products={filteredProducts} viewAllLink="#" />
             ) : (
               <div className="search-page__empty">
                 <svg className="search-page__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">

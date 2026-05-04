@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
+import { AdminRoute } from "./components/protectedRoute/AdminRoute";
 import { Toaster } from "./components/ui/toaster";
 import { ConfirmModalProvider } from "./components/ui/confirm-modal";
 
@@ -16,6 +17,7 @@ const OrderListPage = lazy(() => import("./pages/OrderList/OrderListPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage/AuthPage"));
 const ProductDetailPage = lazy(() => import("./pages/ProductDetail/ProductDetailPage"));
 const ForgotPasswordPage = lazy(() => import("./pages/ForgotPassword/ForgotPasswordPage"));
+const CategoryAdminPage = lazy(() => import("./pages/AdminCategory/CategoryAdminPage"));
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/search" element={<SearchPage />} />
+              <Route path="/products/:categorySlug" element={<SearchPage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/order-complete" element={<OrderCompletePage />} />
@@ -54,6 +57,14 @@ function App() {
                   <ProtectedRoute>
                     <OrderListPage />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/categories"
+                element={
+                  <AdminRoute>
+                    <CategoryAdminPage />
+                  </AdminRoute>
                 }
               />
             </Routes>

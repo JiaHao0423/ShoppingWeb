@@ -782,6 +782,33 @@
   }
 }
 
+.member-page__profile-admin {
+  grid-column: 1 / -1;
+  border-top: 1px solid #ececec;
+  padding-top: 12px;
+  margin-top: 12px;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: $font-size-lg;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 10px;
+    color: $secondary-color;
+    font-size: $font-size-sm;
+  }
+}
+
+.member-page__admin-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  width: auto;
+}
+
 .member-page__profile-field--full {
   grid-column: 1 / -1;
 }

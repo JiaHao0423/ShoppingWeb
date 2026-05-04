@@ -19,6 +19,21 @@ const ProductService = {
     const response = await axios.get("/products/categories");
     return response.data;
   },
+
+  createCategory: async (payload: { name: string; parentCategory: "tops" | "bottoms" | "onePiece" | "others" }) => {
+    const response = await axios.post("/products/admin/categories", payload);
+    return response.data;
+  },
+
+  updateCategory: async (id: number | string, payload: { name: string; parentCategory: "tops" | "bottoms" | "onePiece" | "others" }) => {
+    const response = await axios.put(`/products/admin/categories/${id}`, payload);
+    return response.data;
+  },
+
+  deleteCategory: async (id: number | string) => {
+    const response = await axios.delete(`/products/admin/categories/${id}`);
+    return response.data;
+  },
 };
 
 export default ProductService;

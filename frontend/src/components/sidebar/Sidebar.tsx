@@ -14,9 +14,10 @@ type FilterPayload = {
 
 type SidebarProps = {
   onFilterChange?: (payload: FilterPayload) => void;
+  categories?: Array<{ value: string; label: string }>;
 };
 
-const Sidebar = ({ onFilterChange }: SidebarProps) => {
+const Sidebar = ({ onFilterChange, categories }: SidebarProps) => {
   const [expandedTabs, setExpandedTabs] = useState<ExpandedTabs>({
     category: true,
     color: false,
@@ -85,12 +86,13 @@ const Sidebar = ({ onFilterChange }: SidebarProps) => {
   const rightPercent = ((priceRange[1] - minPrice) / (maxPrice - minPrice)) * 100;
   const isAnyTabOpen = Object.values(expandedTabs).some(Boolean);
 
-  const categories = [
+  const defaultCategories = [
     { value: "tops", label: "上衣" },
     { value: "bottoms", label: "下身" },
     { value: "outerwear", label: "外套" },
     { value: "dresses", label: "連身裙" },
   ];
+  const categoryOptions = categories && categories.length > 0 ? categories : defaultCategories;
 
   const colors = [
     { value: "black", label: "黑色" },
@@ -122,7 +124,7 @@ const Sidebar = ({ onFilterChange }: SidebarProps) => {
 
           <div className={`sidebar__content ${expandedTabs.category ? "sidebar__content--open" : ""}`}>
             <div className="sidebar__options">
-              {categories.map((cat) => (
+              {categoryOptions.map((cat) => (
                 <label key={cat.value} className="sidebar__option">
                   <input
                     type="radio"

@@ -1,33 +1,43 @@
 package com.ben.com.backend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "categories")
+@Table(name = "user_addresses")
 @EntityListeners(AuditingEntityListener.class)
-public class Category {
-
+public class UserAddress {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(unique = true, nullable = false)
-  private String name;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-  @Column(name = "parent_category")
-  private String parentCategory;
+  @Column(nullable = false)
+  private String recipientName;
+
+  @Column(nullable = false)
+  private String phone;
+
+  @Column(nullable = false)
+  private String address;
+
+  @Column(nullable = false)
+  private boolean isDefault;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
@@ -36,7 +46,4 @@ public class Category {
   @LastModifiedDate
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
-
-  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Product> products;
 }

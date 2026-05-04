@@ -19,6 +19,8 @@ export const ROUTES = {
   ORDER_COMPLETE: "/order-complete",
   ABOUT: "/about",
   CONTACT: "/contact",
+  /** 管理員：商品分類維護 */
+  ADMIN_CATEGORIES: "/admin/categories",
 } as const;
 
 /**
