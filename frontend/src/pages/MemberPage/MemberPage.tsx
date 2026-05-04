@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
 import {
@@ -25,6 +25,7 @@ import {
 import { ROUTES } from "../../constants/routes";
 import { useAuth } from "../../contexts/AuthContext";
 import AuthService from "../../services/authService";
+import { hasAdminRole } from "../../utils/roles";
 import UserService, { type UpdateUserProfileRequest, type UserAddress } from "../../services/userService";
 import notify from "../../utils/notify";
 import "./MemberPage.scss";
@@ -35,11 +36,11 @@ const MEMBER = {
 };
 
 const ORDER_STATUS_TABS = [
-  { id: "pending_payment", label: "待付款", icon: <CreditCardIcon /> },
-  { id: "pending_shipment", label: "待出貨", icon: <BoxIcon /> },
-  { id: "pending_receipt", label: "待收貨", icon: <DownloadBoxIcon />, active: true },
-  { id: "completed", label: "已完成", icon: <CheckBadgeIcon /> },
-];
+  { id: "PENDING", label: "待付款", icon: <CreditCardIcon /> },
+  { id: "SHIPPED", label: "待出貨", icon: <BoxIcon /> },
+  { id: "DELIVERED", label: "待收貨", icon: <DownloadBoxIcon />, active: true },
+  { id: "COMPLETED", label: "已完成", icon: <CheckBadgeIcon /> },
+] as const;
 
 const TOOLS = [
   { id: "profile", label: "會員資料", icon: <UserIcon /> },
@@ -126,7 +127,8 @@ const MemberPage = () => {
   const [activeTool, setActiveTool] = useState("profile");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const { logout } = useAuth();
+  const [profileRoles, setProfileRoles] = useState<string[]>([]);
+  const { logout, user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [addressForm, setAddressForm] = useState({ recipientName: "", phone: "", address: "" });
@@ -145,6 +147,10 @@ const MemberPage = () => {
 
   const handleGoBack = () => navigate(-1);
   const handleAllOrders = () => navigate(ROUTES.ORDERS);
+  const handleOrderTabClick = (status: (typeof ORDER_STATUS_TABS)[number]["id"]) => {
+    setActiveOrderTab(status);
+    navigate(`${ROUTES.ORDERS}?status=${encodeURIComponent(status)}`);
+  };
 
   const handleLogout = () => {
     logout();
@@ -156,6 +162,11 @@ const MemberPage = () => {
       try {
         setLoadingProfile(true);
         const user = await UserService.getCurrentUserProfile();
+        const rolesFromApi = user.roles ?? [];
+        setProfileRoles(rolesFromApi);
+        if (rolesFromApi.length > 0) {
+          localStorage.setItem("userRoles", JSON.stringify(rolesFromApi));
+        }
         setProfile({
           name: user.name ?? "",
           email: user.email ?? "",
@@ -384,6 +395,15 @@ const MemberPage = () => {
               發送重設密碼連結
             </button>
           </div>
+          {hasAdminRole([...(user?.roles ?? []), ...AuthService.getUserRoles(), ...profileRoles]) && (
+            <div className="member-page__profile-admin">
+              <h3>後台</h3>
+              <p>管理商品分類與 Header 大分類歸屬。</p>
+              <Link className="member-page__order-action-btn member-page__order-action-btn--outline member-page__admin-link" to={ROUTES.ADMIN_CATEGORIES}>
+                分類管理
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </section>
@@ -499,7 +519,7 @@ const MemberPage = () => {
                     <li key={tab.id} className="member-page__order-tab-item">
                       <button
                         className={`member-page__order-tab-btn${activeOrderTab === tab.id ? " member-page__order-tab-btn--active" : ""}`}
-                        onClick={() => setActiveOrderTab(tab.id)}
+                        onClick={() => handleOrderTabClick(tab.id)}
                         aria-pressed={activeOrderTab === tab.id}
                       >
                         <span className="member-page__order-tab-icon">{tab.icon}</span>

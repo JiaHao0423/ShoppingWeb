@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
 import OrderService from "../../services/orderService";
@@ -10,10 +10,12 @@ const ORDER_TABS = [
   { id: "PENDING", label: "待付款" },
   { id: "SHIPPED", label: "待出貨" },
   { id: "DELIVERED", label: "待收貨" },
+  { id: "COMPLETED", label: "已完成" },
   { id: "CANCELLED", label: "已取消" },
 ] as const;
 
 type OrderStatus = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "COMPLETED";
+type OrderTabId = (typeof ORDER_TABS)[number]["id"];
 type ActionItem = { label: string; variant: "solid" | "outline" };
 type OrderItem = { img: string; price: number; qty: number };
 type FormattedOrder = {
@@ -42,11 +44,25 @@ const getActionsByStatus = (status: OrderStatus): ActionItem[] => {
   return [{ label: "查看詳情", variant: "outline" }];
 };
 
+const isOrderTabId = (value: string | null): value is OrderTabId => {
+  if (!value) return false;
+  return ORDER_TABS.some((tab) => tab.id === value);
+};
+
 const OrderListPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<OrderTabId>(() => {
+    const status = searchParams.get("status");
+    return isOrderTabId(status) ? status : "all";
+  });
   const [orders, setOrders] = useState<FormattedOrder[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    setActiveTab(isOrderTabId(status) ? status : "all");
+  }, [searchParams]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -89,6 +105,14 @@ const OrderListPage = () => {
   }, []);
 
   const handleGoBack = () => navigate(-1);
+  const handleTabChange = (tabId: OrderTabId) => {
+    setActiveTab(tabId);
+    if (tabId === "all") {
+      setSearchParams({});
+      return;
+    }
+    setSearchParams({ status: tabId });
+  };
   const filteredOrders = activeTab === "all" ? orders : orders.filter((o) => o.statusKey === activeTab);
 
   if (loading) return <div className="order-list__loading">載入中...</div>;
@@ -117,7 +141,7 @@ const OrderListPage = () => {
           <button
             key={tab.id}
             className={`order-list__mobile-tab${activeTab === tab.id ? " order-list__mobile-tab--active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
           >
             {tab.label}
           </button>
@@ -136,7 +160,7 @@ const OrderListPage = () => {
                   <li key={tab.id} className="order-list__sidebar-nav-item">
                     <button
                       className={`order-list__sidebar-nav-btn${activeTab === tab.id ? " order-list__sidebar-nav-btn--active" : ""}`}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleTabChange(tab.id)}
                     >
                       {tab.label}
                     </button>

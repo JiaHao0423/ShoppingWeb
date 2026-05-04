@@ -108,7 +108,10 @@ public class UserService {
       .gender(user.getGender())
       .avatarUrl(user.getAvatarUrl())
       .memberLevel(user.getMemberLevel())
-      .roles(Arrays.stream(user.getRoles().split(",")).toList())
+      .roles(Arrays.stream(user.getRoles().split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .toList())
       .createdAt(user.getCreatedAt())
       .build();
   }
