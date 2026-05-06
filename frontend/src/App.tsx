@@ -1,11 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { AuthProvider } from "./contexts/AuthContext";
-import { CartProvider } from "./contexts/CartContext";
-import { ProtectedRoute } from "./components/protectedRoute/ProtectedRoute";
-import { AdminRoute } from "./components/protectedRoute/AdminRoute";
-import { Toaster } from "./components/ui/toaster";
-import { ConfirmModalProvider } from "./components/ui/confirm-modal";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
+import { ProtectedRoute } from "@/components/protectedRoute/ProtectedRoute";
+import { AdminRoute } from "@/components/protectedRoute/AdminRoute";
+import { Toaster } from "@/components/ui/toaster";
+import { ConfirmModalProvider } from "@/components/ui/confirm-modal";
+import { PageLoading } from "@/components/ui/page-loading";
 
 const HomePage = lazy(() => import("./pages/Home/HomePage"));
 const SearchPage = lazy(() => import("./pages/Search/SearchPage"));
@@ -26,7 +27,7 @@ function App() {
         <BrowserRouter>
           <Toaster />
           <ConfirmModalProvider />
-          <Suspense fallback={<div>載入中...</div>}>
+          <Suspense fallback={<PageLoading />}>
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<HomePage />} />

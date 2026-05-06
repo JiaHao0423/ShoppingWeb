@@ -1,5 +1,6 @@
-@import '../../variables';
-@import '../../mixins';
+@use "../../variables" as *;
+@use "../../mixins" as *;
+@use "sass:color";
 
 // ============================================================
 // Block: .member-page
@@ -96,7 +97,7 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: darken(#D4A5A5, 10%);
+    background-color: color.adjust(#D4A5A5, $lightness: -10%);
   }
 
   &:active {
@@ -669,7 +670,7 @@
     color: $primary-color;
 
     &:hover {
-      background-color: rgba($primary-color, 0.08);
+      background-color: color.change($primary-color, $alpha: 0.08);
     }
   }
 
@@ -680,7 +681,7 @@
     color: #fff;
 
     &:hover {
-      background-color: darken($primary-color, 8%);
+      background-color: color.adjust($primary-color, $lightness: -8%);
     }
   }
 }
@@ -832,8 +833,8 @@
 }
 
 .member-page__address-card--default {
-  border-color: rgba($primary-color, 0.6);
-  background: rgba($primary-color, 0.05);
+  border-color: color.change($primary-color, $alpha: 0.6);
+  background: color.change($primary-color, $alpha: 0.05);
 }
 
 .member-page__address-badge {

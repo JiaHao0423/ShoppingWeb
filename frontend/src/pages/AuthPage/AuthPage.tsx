@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
+import Header from "@/components/layout/Header/Header";
 import "./AuthPage.scss";
-import AuthService from "../../services/authService";
-import { useAuth } from "../../contexts/AuthContext";
+import AuthService from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
 
 type AuthVariant = "register" | "login" | "simple-login";
 type FieldType = "text" | "password";
@@ -162,8 +163,14 @@ const AuthPage = ({ variant = "login" }: AuthPageProps) => {
         });
         navigate("/");
       }
-    } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || err?.message || "操作失敗，請稍後再試";
+    } catch (err: unknown) {
+      let errorMessage = "操作失敗，請稍後再試";
+      if (isAxiosError(err)) {
+        const data = err.response?.data as { message?: string } | undefined;
+        errorMessage = data?.message ?? err.message ?? errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
       setError(errorMessage);
       console.error("Auth error:", err);
     } finally {

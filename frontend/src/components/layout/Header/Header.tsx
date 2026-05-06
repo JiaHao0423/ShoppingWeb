@@ -2,17 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import "./Header.scss";
-import Logo from "../../../assets/header/logo.svg";
-import { useAuth } from "../../../contexts/AuthContext";
+import Logo from "@/assets/header/logo.svg";
+import { useAuth } from "@/contexts/AuthContext";
 import HamburgerButton from "./HamburgerButton";
 import SearchBar from "./SearchBar";
 import HeaderIcons from "./HeaderIcons";
 import DropdownMenu from "./DropdownMenu";
 import DesktopMenu from "./DesktopMenu";
-import { MENU_CATEGORIES } from "../../../constants/menuData.js";
-import { IMAGE_CATEGORIES } from "../../../constants/menuData.js";
-import { ROUTES } from "../../../constants/routes";
-import ProductService from "../../../services/productService";
+import { MENU_CATEGORIES } from "@/constants/menuData.js";
+import { IMAGE_CATEGORIES } from "@/constants/menuData.js";
+import { ROUTES } from "@/constants/routes";
+import ProductService from "@/services/productService";
 
 type HeaderProps = {
   variant?: string;

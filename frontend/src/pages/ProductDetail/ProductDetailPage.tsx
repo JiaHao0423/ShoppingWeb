@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ProductService from "../../services/productService";
-import CartService from "../../services/cartService";
-import DefaultLayout from "../../components/layout/DefaultLayout";
-import { useAuth } from "../../contexts/AuthContext";
-import { ROUTES } from "../../constants/routes";
-import notify from "../../utils/notify";
+import ProductService from "@/services/productService";
+import CartService from "@/services/cartService";
+import DefaultLayout from "@/components/layout/DefaultLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { ROUTES } from "@/constants/routes";
+import notify from "@/utils/notify";
+import { PageLoading } from "@/components/ui/page-loading";
 import "./ProductDetailPage.scss";
 
 type Variant = {
@@ -73,9 +74,13 @@ const ProductDetailPage = () => {
   const allColors = product ? [...new Set(product.variants.map((v) => v.color))] : [];
   const allSizes = product ? [...new Set(product.variants.map((v) => v.size))] : [];
 
-  const availableSizesForCurrentColor = product
-    ? product.variants.filter((v) => v.color === selectedColor && v.stock > 0).map((v) => v.size)
-    : [];
+  const availableSizesForCurrentColor = useMemo(
+    () =>
+      product
+        ? product.variants.filter((v) => v.color === selectedColor && v.stock > 0).map((v) => v.size)
+        : [],
+    [product, selectedColor]
+  );
 
   useEffect(() => {
     if (product && selectedColor) {
@@ -123,7 +128,7 @@ const ProductDetailPage = () => {
   if (loading)
     return (
       <DefaultLayout>
-        <div className="product-detail__loading">載入中...</div>
+        <PageLoading />
       </DefaultLayout>
     );
   if (error)

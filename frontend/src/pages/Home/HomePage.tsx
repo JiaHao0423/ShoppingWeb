@@ -1,24 +1,18 @@
-import { ComponentType, useEffect, useState } from "react";
-import DefaultLayout from "../../components/layout/DefaultLayout";
-import Carousel from "../../components/carousel/Carousel";
-import ProductSection from "../../components/productSection/ProductSection";
-import ProductService from "../../services/productService";
+import { useEffect, useState } from "react";
+import DefaultLayout from "@/components/layout/DefaultLayout";
+import Carousel from "@/components/carousel/Carousel";
+import ProductSection, { type ProductSectionItem } from "@/components/productSection/ProductSection";
+import ProductService from "@/services/productService";
+import { PageLoading } from "@/components/ui/page-loading";
 
 type ProductListResponse = {
-  content: any[];
-};
-type ProductSectionProps = {
-  title?: string;
-  products?: any[];
-  viewAllLink?: string;
+  content: ProductSectionItem[];
 };
 
 const HomePage = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductSectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const TypedProductSection = ProductSection as unknown as ComponentType<ProductSectionProps>;
-
   useEffect(() => {
     const controller = new AbortController();
 
@@ -43,7 +37,7 @@ const HomePage = () => {
   }, []);
 
   if (loading) {
-    return <div>載入中...</div>;
+    return <PageLoading />;
   }
 
   if (error) {
@@ -53,10 +47,9 @@ const HomePage = () => {
   return (
     <DefaultLayout>
       <Carousel />
-      <TypedProductSection title="熱銷商品" products={products} viewAllLink="/hot-products" />
-      <TypedProductSection title="新品推薦" products={products} viewAllLink="/new-arrivals" />
+      <ProductSection title="熱銷商品" products={products} viewAllLink="/hot-products" />
+      <ProductSection title="新品推薦" products={products} viewAllLink="/new-arrivals" />
     </DefaultLayout>
   );
 };
-
 export default HomePage;

@@ -1,5 +1,5 @@
-@import "../../variables";
-@import "../../mixins";
+@use "../../variables" as *;
+@use "../../mixins" as *;
 
 .category-admin {
   padding: 100px 0 60px;

@@ -48,4 +48,11 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  {
+    files: ['src/contexts/**/*.{ts,tsx}'],
+    rules: {
+      // Context 模組通常同時 export Provider、hook、createContext，屬合理例外
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

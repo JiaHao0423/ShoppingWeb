@@ -1,4 +1,4 @@
-import axios from "../api/axios";
+import axios from "@/api/axios";
 
 const ProductService = {
   getProducts: async (categoryId?: number | string | null, page = 0, size = 10, signal?: AbortSignal) => {

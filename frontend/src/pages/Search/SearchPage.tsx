@@ -1,10 +1,25 @@
-import { ComponentType, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import DefaultLayout from "../../components/layout/DefaultLayout";
-import ProductSection from "../../components/productSection/ProductSection";
-import Sidebar from "../../components/sidebar/Sidebar";
-import ProductService from "../../services/productService";
+import DefaultLayout from "@/components/layout/DefaultLayout";
+import ProductSection from "@/components/productSection/ProductSection";
+import Sidebar from "@/components/sidebar/Sidebar";
+import ProductService from "@/services/productService";
+import { PageLoading } from "@/components/ui/page-loading";
 import "./SearchPage.scss";
+
+/** URL path segment（如 /products/jeans）對應到 Sidebar 篩選用的 value */
+const CATEGORY_SLUG_TO_FILTER: Record<string, string> = {
+  "t-shirt": "tops",
+  shirt: "tops",
+  sweater: "tops",
+  jeans: "bottoms",
+  shorts: "bottoms",
+  skirt: "bottoms",
+  dresses: "dresses",
+  jumpsuit: "dresses",
+  jackets: "outerwear",
+  "sunscreen-clothing": "outerwear",
+};
 
 type Filters = {
   category: string;
@@ -32,24 +47,11 @@ const SearchPage = () => {
   const categoryFromQuery = searchParams.get("category") ?? "";
   const keyword = (searchParams.get("q") ?? "").trim().toLowerCase();
 
-  const categoryFromSlugMap: Record<string, string> = {
-    "t-shirt": "tops",
-    shirt: "tops",
-    sweater: "tops",
-    jeans: "bottoms",
-    shorts: "bottoms",
-    skirt: "bottoms",
-    dresses: "dresses",
-    jumpsuit: "dresses",
-    jackets: "outerwear",
-    "sunscreen-clothing": "outerwear",
-  };
-
   const resolvedInitialCategory = useMemo(() => {
     if (categoryIdFromQuery) return categoryIdFromQuery;
     if (categoryFromQuery) return categoryFromQuery;
     if (!categorySlug) return "";
-    return categoryFromSlugMap[categorySlug] ?? "";
+    return CATEGORY_SLUG_TO_FILTER[categorySlug] ?? "";
   }, [categoryIdFromQuery, categoryFromQuery, categorySlug]);
 
   const [filters, setFilters] = useState<Filters>({
@@ -115,8 +117,6 @@ const SearchPage = () => {
     fetchSearchData();
     return () => controller.abort();
   }, []);
-  const TypedProductSection = ProductSection as unknown as ComponentType<{ title?: string; products?: any[]; viewAllLink?: string }>;
-
   const handleFilterChange = (newFilters: Partial<Filters> & { reset?: boolean }) => {
     if (newFilters.reset) {
       setFilters({ category: "", color: "", size: "", priceRange: [0, 10000] });
@@ -141,7 +141,7 @@ const SearchPage = () => {
   }, [filters.category, keyword, searchParams, categoryOptions]);
 
   if (loading) {
-    return <div>載入中...</div>;
+    return <PageLoading />;
   }
 
   if (error) {
@@ -155,7 +155,7 @@ const SearchPage = () => {
           <Sidebar onFilterChange={handleFilterChange} categories={categoryOptions} />
           <div className="search-page__main">
             {filteredProducts.length > 0 ? (
-              <TypedProductSection title={pageTitle} products={filteredProducts} viewAllLink="#" />
+              <ProductSection title={pageTitle} products={filteredProducts} viewAllLink="#" />
             ) : (
               <div className="search-page__empty">
                 <svg className="search-page__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">

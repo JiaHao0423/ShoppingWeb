@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
-import CartService from "../../services/cartService";
-import OrderService from "../../services/orderService";
+import Header from "@/components/layout/Header/Header";
+import CartService from "@/services/cartService";
+import OrderService from "@/services/orderService";
 import "./CheckoutPage.scss";
-import { CameraIcon } from "../../components/Icons/Icons";
-import { ROUTES } from "../../constants/routes";
-import Footer from "../../components/layout/Footer/Footer";
-import notify from "../../utils/notify";
+import { CameraIcon } from "@/components/Icons/Icons";
+import { ROUTES } from "@/constants/routes";
+import Footer from "@/components/layout/Footer/Footer";
+import notify from "@/utils/notify";
+import { PageLoading } from "@/components/ui/page-loading";
 
 type CheckoutItem = {
   id: number | string;
@@ -101,7 +102,7 @@ const CheckoutPage = () => {
     }
   };
 
-  if (loading) return <div className="checkout__loading">載入中...</div>;
+  if (loading) return <PageLoading />;
 
   return (
     <div className="checkout">

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { registerConfirmHandler, type ConfirmOptions } from "../../hooks/use-confirm";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { registerConfirmHandler, type ConfirmOptions } from "@/hooks/use-confirm";
 import "./confirm-modal.scss";
 
 type ConfirmState = ConfirmOptions & {
@@ -19,7 +19,7 @@ const initialState: ConfirmState = {
 
 export function ConfirmModalProvider() {
   const [state, setState] = useState<ConfirmState>(initialState);
-  const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null);
+  const [, setResolver] = useState<((value: boolean) => void) | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -33,8 +33,8 @@ export function ConfirmModalProvider() {
           confirmText: options.confirmText ?? "確認",
           cancelText: options.cancelText ?? "取消",
           variant: options.variant ?? "default",
-          closeOnBackdrop: options.closeOnBackdrop ?? (options.variant === "destructive" ? false : true),
-          closeOnEscape: options.closeOnEscape ?? (options.variant === "destructive" ? false : true),
+          closeOnBackdrop: options.closeOnBackdrop ?? (options.variant !== "destructive"),
+          closeOnEscape: options.closeOnEscape ?? (options.variant !== "destructive"),
         });
         setResolver(() => resolve);
       });
@@ -45,11 +45,13 @@ export function ConfirmModalProvider() {
     };
   }, []);
 
-  const close = (value: boolean) => {
-    resolver?.(value);
-    setResolver(null);
+  const close = useCallback((value: boolean) => {
+    setResolver((r: ((v: boolean) => void) | null) => {
+      r?.(value);
+      return null;
+    });
     setState(initialState);
-  };
+  }, []);
 
   useEffect(() => {
     if (!state.open) return;
@@ -92,7 +94,7 @@ export function ConfirmModalProvider() {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [state.open, state.closeOnEscape]);
+  }, [close, state.closeOnEscape, state.open]);
 
   if (!state.open) return null;
 

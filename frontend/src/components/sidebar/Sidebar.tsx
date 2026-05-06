@@ -1,5 +1,6 @@
 import { useState } from "react";
-import "./Siderbar.scss";
+import { BREAKPOINT_MOBILE_MAX_PX } from "@/constants/breakpoints";
+import "./Sidebar.scss";
 
 type TabKey = "category" | "color" | "size" | "price";
 
@@ -34,7 +35,7 @@ const Sidebar = ({ onFilterChange, categories }: SidebarProps) => {
   const maxPrice = 2000;
 
   const toggleTab = (tabName: TabKey) => {
-    const isMobile = window.innerWidth <= 767;
+    const isMobile = window.innerWidth <= BREAKPOINT_MOBILE_MAX_PX;
     setExpandedTabs((prev) => {
       if (isMobile) {
         return {

@@ -1,5 +1,6 @@
-@import '../../variables';
-@import '../../mixins';
+@use "../../variables" as *;
+@use "../../mixins" as *;
+@use "sass:color";
 
 // ============================================================
 // Block: .auth — 認證頁面（註冊 / 登入 / 第三方登入共用）
@@ -220,7 +221,7 @@
   }
 
   &:hover {
-    background-color: darken($primary-color, 8%);
+    background-color: color.adjust($primary-color, $lightness: -8%);
   }
 }
 
@@ -275,7 +276,7 @@
   font-weight: 600;
 
   &:hover {
-    background-color: rgba($primary-color, 0.06);
+    background-color: color.change($primary-color, $alpha: 0.06);
   }
 }
 

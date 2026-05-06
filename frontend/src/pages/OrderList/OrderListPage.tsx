@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
-import Footer from "../../components/layout/Footer/Footer";
-import OrderService from "../../services/orderService";
+import Header from "@/components/layout/Header/Header";
+import Footer from "@/components/layout/Footer/Footer";
+import OrderService from "@/services/orderService";
+import { PageLoading } from "@/components/ui/page-loading";
 import "./OrderListPage.scss";
 
 const ORDER_TABS = [
@@ -115,7 +116,7 @@ const OrderListPage = () => {
   };
   const filteredOrders = activeTab === "all" ? orders : orders.filter((o) => o.statusKey === activeTab);
 
-  if (loading) return <div className="order-list__loading">載入中...</div>;
+  if (loading) return <PageLoading />;
 
   return (
     <div className="order-list">

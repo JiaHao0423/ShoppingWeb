@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import "./ProductSection.scss";
 
-type Product = {
+/** 首頁／搜尋等列表列使用的商品卡片資料形狀 */
+export type ProductSectionItem = {
   id: string | number;
   name: string;
   price: number;
@@ -13,7 +14,7 @@ type Product = {
 
 export type ProductSectionProps = {
   title?: string;
-  products?: Product[];
+  products?: ProductSectionItem[];
   viewAllLink?: string;
 };
 
@@ -36,7 +37,7 @@ const ProductSection = ({ title = "熱銷排行榜", products = [], viewAllLink 
     }
   };
 
-  const handleProductClick = (productId: Product["id"]) => {
+  const handleProductClick = (productId: ProductSectionItem["id"]) => {
     navigate(`/product/${productId}`);
   };
 

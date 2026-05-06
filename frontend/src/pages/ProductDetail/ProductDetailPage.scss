@@ -1,5 +1,6 @@
-@import '../../mixins';
-@import '../../variables';
+@use "../../mixins" as *;
+@use "../../variables" as *;
+@use "sass:color";
 
 // Product Detail Page Styles - Refined Minimalism with Subtle Elegance
 .product-detail {
@@ -137,15 +138,15 @@
     text-align: center;
 
     &:hover {
-      border-color: darken($primary-color, 10%);
-      color: darken($primary-color, 10%);
+      border-color: color.adjust($primary-color, $lightness: -10%);
+      color: color.adjust($primary-color, $lightness: -10%);
     }
 
     &.is-active {
       border-color: $primary-color;
       background-color: $primary-color;
       color: #fff;
-      box-shadow: 0 2px 8px rgba($primary-color, 0.3); // 增加選中效果
+      box-shadow: 0 2px 8px color.change($primary-color, $alpha: 0.3); // 增加選中效果
     }
   }
 
@@ -220,7 +221,7 @@
     }
 
     &:hover {
-      background-color: darken($primary-color, 10%);
+      background-color: color.adjust($primary-color, $lightness: -10%);
       transform: translateY(-2px); // 輕微上浮效果
     }
 

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import "./CartPage.scss";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
+import Header from "@/components/layout/Header/Header";
 import CartItem from "./CartItem";
 import CartSummary from "./CartSummary";
-import CartService from "../../services/cartService";
-import { useAuth } from "../../contexts/AuthContext";
-import { ROUTES } from "../../constants/routes";
-import notify from "../../utils/notify";
+import CartService from "@/services/cartService";
+import { useAuth } from "@/contexts/AuthContext";
+import { ROUTES } from "@/constants/routes";
+import notify from "@/utils/notify";
+import { PageLoading } from "@/components/ui/page-loading";
 
 type CartUiItem = {
   id: number | string;
@@ -138,9 +139,7 @@ const Cart = () => {
     return (
       <div className="cart">
         <Header variant="cart" />
-        <div className="cart__loading" style={{ padding: "100px", textAlign: "center" }}>
-          載入中...
-        </div>
+        <PageLoading />
       </div>
     );
   }

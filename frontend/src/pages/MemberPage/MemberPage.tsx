@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
-import Footer from "../../components/layout/Footer/Footer";
+import Header from "@/components/layout/Header/Header";
+import Footer from "@/components/layout/Footer/Footer";
 import {
   BackIcon,
   BellIcon,
@@ -21,13 +21,14 @@ import {
   TicketIcon,
   UserIcon,
   WalletIcon,
-} from "../../components/Icons/Icons";
-import { ROUTES } from "../../constants/routes";
-import { useAuth } from "../../contexts/AuthContext";
-import AuthService from "../../services/authService";
-import { hasAdminRole } from "../../utils/roles";
-import UserService, { type UpdateUserProfileRequest, type UserAddress } from "../../services/userService";
-import notify from "../../utils/notify";
+} from "@/components/Icons/Icons";
+import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthService from "@/services/authService";
+import { hasAdminRole } from "@/utils/roles";
+import UserService, { type UpdateUserProfileRequest, type UserAddress } from "@/services/userService";
+import notify from "@/utils/notify";
+import { PageLoading } from "@/components/ui/page-loading";
 import "./MemberPage.scss";
 
 const MEMBER = {
@@ -336,7 +337,7 @@ const MemberPage = () => {
       </div>
 
       {loadingProfile ? (
-        <div className="member-page__profile-loading">載入中...</div>
+        <PageLoading />
       ) : (
         <div className="member-page__profile-form">
           <label className="member-page__profile-field">

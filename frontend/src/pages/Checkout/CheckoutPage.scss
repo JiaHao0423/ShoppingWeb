@@ -1,5 +1,5 @@
-@import '../../variables';
-@import '../../mixins';
+@use "../../variables" as *;
+@use "../../mixins" as *;
 
 // ============================
 // Block: .checkout
@@ -332,7 +332,7 @@
 }
 
 // 桌面版：信用卡表單卡片詳情 + 帳單地址 並排
-@media (min-width: $breakpoint-desktop) {
+@include desktop {
   .checkout-form:has(.checkout-form__section + .checkout-form__section) {
     display: grid;
     grid-template-columns: 1fr 1fr;
