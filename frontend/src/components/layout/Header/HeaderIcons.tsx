@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { CartIcon, SearchIcon, UserIcon } from "../../Icons/Icons";
+import { CartIcon, SearchIcon, UserIcon } from "@/components/Icons/Icons";
 
 type HeaderIconsProps = {
   isMenuOpen: boolean;

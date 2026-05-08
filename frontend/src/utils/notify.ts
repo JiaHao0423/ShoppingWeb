@@ -1,5 +1,5 @@
-import { toast } from "../hooks/use-toast";
-import { openConfirm, type ConfirmOptions } from "../hooks/use-confirm";
+import { toast } from "@/hooks/use-toast";
+import { openConfirm, type ConfirmOptions } from "@/hooks/use-confirm";
 
 const notify = {
   info: (message: string) =>

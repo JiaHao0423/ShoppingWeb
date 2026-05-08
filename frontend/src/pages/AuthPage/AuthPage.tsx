@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header/Header";
 import "./AuthPage.scss";
 import AuthService from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
+import { ROUTES } from "@/constants/routes";
+import notify from "@/utils/notify";
 
 type AuthVariant = "register" | "login" | "simple-login";
 type FieldType = "text" | "password";
@@ -96,8 +98,13 @@ type AuthFormData = {
 
 const AuthPage = ({ variant = "login" }: AuthPageProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const config = PAGE_CONFIG[variant] || PAGE_CONFIG.login;
   const { login } = useAuth();
+  const redirectTo =
+    typeof (location.state as { redirectTo?: unknown } | null)?.redirectTo === "string"
+      ? ((location.state as { redirectTo?: string }).redirectTo ?? null)
+      : null;
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -161,7 +168,11 @@ const AuthPage = ({ variant = "login" }: AuthPageProps) => {
           refreshToken: response.refreshToken,
           roles: response.roles ?? [],
         });
-        navigate("/");
+        const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : null;
+        if (safeRedirect === ROUTES.CHECKOUT) {
+          notify.success("登入成功，已返回結帳流程。");
+        }
+        navigate(safeRedirect ?? ROUTES.HOME);
       }
     } catch (err: unknown) {
       let errorMessage = "操作失敗，請稍後再試";

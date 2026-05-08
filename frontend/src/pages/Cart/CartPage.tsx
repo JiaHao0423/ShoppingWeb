@@ -6,6 +6,7 @@ import CartItem from "./CartItem";
 import CartSummary from "./CartSummary";
 import CartService from "@/services/cartService";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { ROUTES } from "@/constants/routes";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
@@ -24,6 +25,7 @@ type CartUiItem = {
 const Cart = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { updateCart } = useCart();
   const [cartItems, setCartItems] = useState<CartUiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,17 +76,34 @@ const Cart = () => {
     }
   };
 
+  const fetchGuestCart = () => {
+    setLoading(true);
+    const guestItems = CartService.getGuestCartItems();
+    const formattedItems: CartUiItem[] = guestItems.map((item) => ({
+      id: `guest-${item.productVariantId}`,
+      variantId: item.productVariantId,
+      name: item.productName ?? "未命名商品",
+      color: item.color ?? "無",
+      size: item.size ?? "無",
+      price: item.price ?? 0,
+      quantity: item.quantity,
+      img: item.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200",
+    }));
+    setCartItems(formattedItems);
+    setLoading(false);
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     if (!authLoading) {
       if (isAuthenticated) {
         fetchCart(controller.signal);
       } else {
-        navigate(ROUTES.LOGIN);
+        fetchGuestCart();
       }
     }
     return () => controller.abort();
-  }, [isAuthenticated, authLoading, navigate]);
+  }, [isAuthenticated, authLoading]);
 
   const calculateCartStats = () => {
     const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -97,8 +116,13 @@ const Cart = () => {
     if (newQuantity < 1) return;
 
     try {
-      await CartService.updateCartItemQuantity(cartItemId, newQuantity);
+      if (isAuthenticated) {
+        await CartService.updateCartItemQuantity(cartItemId, newQuantity);
+      } else {
+        CartService.updateGuestCartItemQuantity(String(cartItemId).replace(/^guest-/, ""), newQuantity);
+      }
       setCartItems((prevItems) => prevItems.map((item) => (item.id === cartItemId ? { ...item, quantity: newQuantity } : item)));
+      await updateCart();
     } catch (err) {
       console.error("更新數量失敗:", err);
       notify.error("更新數量失敗");
@@ -115,8 +139,13 @@ const Cart = () => {
     if (!confirmed) return;
 
     try {
-      await CartService.removeCartItem(cartItemId);
+      if (isAuthenticated) {
+        await CartService.removeCartItem(cartItemId);
+      } else {
+        CartService.removeGuestCartItem(String(cartItemId).replace(/^guest-/, ""));
+      }
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartItemId));
+      await updateCart();
     } catch (err) {
       console.error("刪除項目失敗:", err);
       notify.error("刪除失敗");
@@ -126,6 +155,13 @@ const Cart = () => {
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       notify.info("購物車是空的喔！");
+      return;
+    }
+    if (!isAuthenticated) {
+      notify.info("請先登入會員後再進行結帳");
+      navigate(ROUTES.LOGIN, {
+        state: { redirectTo: ROUTES.CHECKOUT },
+      });
       return;
     }
     navigate(ROUTES.CHECKOUT);

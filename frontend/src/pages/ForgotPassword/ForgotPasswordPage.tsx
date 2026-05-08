@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Header from "../../components/layout/Header/Header";
-import AuthService from "../../services/authService";
-import { ROUTES } from "../../constants/routes";
-import notify from "../../utils/notify";
+import Header from "@/components/layout/Header/Header";
+import AuthService from "@/services/authService";
+import { ROUTES } from "@/constants/routes";
+import notify from "@/utils/notify";
 import "../AuthPage/AuthPage.scss";
 
 const ForgotPasswordPage = () => {

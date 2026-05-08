@@ -44,14 +44,7 @@ function App() {
               <Route path="/reset-password" element={<ForgotPasswordPage />} />
 
               {/* 保護路由 */}
-              <Route
-                path="/cart"
-                element={
-                  <ProtectedRoute>
-                    <CartPage />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/cart" element={<CartPage />} />
               <Route
                 path="/orders"
                 element={

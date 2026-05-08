@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ProductService from "@/services/productService";
 import CartService from "@/services/cartService";
 import DefaultLayout from "@/components/layout/DefaultLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { ROUTES } from "@/constants/routes";
+import { useCart } from "@/contexts/CartContext";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
 import "./ProductDetailPage.scss";
@@ -35,8 +35,8 @@ const HeartIcon = () => (
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { updateCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,9 +103,8 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      notify.info("請先登入會員");
-      navigate(ROUTES.LOGIN);
+    if (!product) {
+      notify.error("商品資訊尚未載入完成");
       return;
     }
 
@@ -117,8 +116,20 @@ const ProductDetailPage = () => {
     }
 
     try {
-      await CartService.addOrUpdateCartItem(variant.id, quantity);
-      notify.success("已成功加入購物車！");
+      if (isAuthenticated) {
+        await CartService.addOrUpdateCartItem(variant.id, quantity);
+        notify.success("已成功加入購物車！");
+      } else {
+        CartService.addOrUpdateGuestCartItem(variant.id, quantity, {
+          productName: product.name,
+          color: selectedColor ?? undefined,
+          size: selectedSize ?? undefined,
+          price: product.price,
+          imageUrl: activeImage,
+        });
+        notify.success("已加入訪客購物車，登入後會自動合併。");
+      }
+      await updateCart();
     } catch (err) {
       console.error("加入購物車失敗:", err);
       notify.error("加入購物車失敗，請稍後再試。");

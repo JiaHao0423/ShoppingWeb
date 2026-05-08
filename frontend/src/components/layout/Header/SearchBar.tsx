@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { CameraIcon, SearchIcon } from "../../Icons/Icons";
+import { CameraIcon, SearchIcon } from "@/components/Icons/Icons";
 
 type SearchBarProps = {
   onSearch: (query: string) => void;

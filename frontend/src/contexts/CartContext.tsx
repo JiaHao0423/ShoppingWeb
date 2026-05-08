@@ -24,7 +24,10 @@ const CartContext = createContext<CartContextValue | null>(null);
 /** 與登入狀態無關的純 API 讀取，供初次載入與 `updateCart` 共用 */
 async function pullCart(isAuthenticated: boolean): Promise<{ data: CartData; count: number }> {
   if (!isAuthenticated) {
-    return { data: null, count: 0 };
+    return {
+      data: null,
+      count: CartService.getGuestCartItemsCount(),
+    };
   }
   try {
     const response = (await CartService.getCart()) as CartData;
@@ -48,6 +51,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     let cancelled = false;
 
     void (async () => {
+      // 首次登入時，先把訪客購物車合併進會員購物車，再拉最新資料。
+      if (isAuthenticated) {
+        try {
+          await CartService.mergeGuestCartToServer();
+        } catch (error) {
+          console.error("Failed to merge guest cart:", error);
+        }
+      }
       const { data, count } = await pullCart(isAuthenticated);
       if (!cancelled) {
         setCart(data);

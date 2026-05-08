@@ -1,0 +1,15 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.page-loading {
+  @include flex-center;
+  min-height: 40vh;
+  padding: $spacing-md;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  color: $secondary-color;
+
+  &__text {
+    letter-spacing: 0.02em;
+  }
+}

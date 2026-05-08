@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import DefaultLayout from "../../components/layout/DefaultLayout";
-import ProductService from "../../services/productService";
-import notify from "../../utils/notify";
-import { ROUTES } from "../../constants/routes";
+import DefaultLayout from "@/components/layout/DefaultLayout";
+import ProductService from "@/services/productService";
+import notify from "@/utils/notify";
+import { ROUTES } from "@/constants/routes";
+import { PageLoading } from "@/components/ui/page-loading";
 import "./CategoryAdminPage.scss";
 
 export type CategoryRow = {
@@ -147,7 +148,7 @@ const CategoryAdminPage = () => {
           </form>
 
           {loading ? (
-            <p className="category-admin__loading">載入中...</p>
+            <PageLoading />
           ) : (
             <div className="category-admin__table-wrap">
               <table className="category-admin__table">
