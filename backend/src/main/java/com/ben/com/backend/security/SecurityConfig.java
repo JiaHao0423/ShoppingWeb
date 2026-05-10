@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -26,13 +26,16 @@ public class SecurityConfig {
   private final AuthenticationProvider authenticationProvider;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http ) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http ) {
     http
       .cors(cors -> cors.configurationSource(request -> {
         CorsConfiguration config = new CorsConfiguration( );
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173" )); // 允許前端地址
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));
+        // 開發（Vite）與 Docker（Nginx 同網域或本機 80）來源
+        config.setAllowedOrigins(
+          List.of("http://localhost:5173", "http://localhost", "http://127.0.0.1")
+        );
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         return config;
       }))
@@ -47,6 +50,10 @@ public class SecurityConfig {
       .authenticationProvider(authenticationProvider)
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build( );
+    try {
+      return http.build( );
+    } catch (Exception ex) {
+      throw new IllegalStateException("Failed to build Spring Security filter chain", ex);
+    }
   }
 }
