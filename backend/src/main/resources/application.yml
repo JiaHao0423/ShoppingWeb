@@ -1,6 +1,8 @@
 server:
   port: ${PORT:8080}
   forward-headers-strategy: framework
+  servlet:
+    context-path: /api
 
 spring:
   application:
@@ -54,12 +56,12 @@ logging:
   # Springdoc OpenAPI Configuration
 springdoc:
   swagger-ui:
-    path: /api/swagger-ui.html
+    path: /swagger-ui.html
     display-request-duration: true
     operations-sorter: method
     tags-sorter: alpha
   api-docs:
-    path: /api/v3/api-docs
+    path: /v3/api-docs
 
     # JWT Configuration
 app:
