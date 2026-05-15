@@ -1,7 +1,6 @@
 server:
   port: ${PORT:8080}
-  servlet:
-    context-path: /api
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -55,15 +54,17 @@ logging:
   # Springdoc OpenAPI Configuration
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    path: /api/swagger-ui.html
     display-request-duration: true
     operations-sorter: method
     tags-sorter: alpha
   api-docs:
-    path: /v3/api-docs
+    path: /api/v3/api-docs
 
     # JWT Configuration
 app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost,http://127.0.0.1}
   frontend:
     base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
   mail:

@@ -2,6 +2,7 @@ package com.ben.com.backend.security;
 
 import com.ben.com.backend.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -25,14 +27,19 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
 
+  @Value("${app.cors.allowed-origins}")
+  private String corsAllowedOrigins;
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http ) {
     http
       .cors(cors -> cors.configurationSource(request -> {
         CorsConfiguration config = new CorsConfiguration( );
-        // 開發（Vite）與 Docker（Nginx 同網域或本機 80）來源
         config.setAllowedOrigins(
-          List.of("http://localhost:5173", "http://localhost", "http://127.0.0.1")
+          Arrays.stream(corsAllowedOrigins.split(","))
+            .map(String::trim)
+            .filter(origin -> !origin.isEmpty())
+            .toList()
         );
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -41,9 +48,10 @@ public class SecurityConfig {
       }))
       .csrf(AbstractHttpConfigurer::disable )
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/auth/**").permitAll()
-        .requestMatchers("/products/**").permitAll()
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .requestMatchers("/", "/health").permitAll()
+        .requestMatchers("/api/auth/**").permitAll()
+        .requestMatchers("/api/products/**").permitAll()
+        .requestMatchers("/api/swagger-ui/**", "/api/v3/api-docs/**").permitAll()
         .anyRequest().authenticated()
       )
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
