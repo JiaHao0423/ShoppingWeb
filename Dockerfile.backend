@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+# 僅後端 API（若 Zeabur 要拆成兩個服務時使用，服務名稱設為 backend）
+FROM eclipse-temurin:21-jdk-alpine AS build
+WORKDIR /app
+
+COPY backend/pom.xml .
+COPY backend/.mvn .mvn
+COPY backend/mvnw .
+RUN chmod +x mvnw
+RUN ./mvnw -B -q dependency:go-offline
+
+COPY backend/src ./src
+RUN ./mvnw -B -q package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+COPY --from=build /app/target/*.jar /app/app.jar
+
+ENV SERVER_PORT=8080
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

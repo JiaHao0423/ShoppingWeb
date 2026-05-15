@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
-# ShoppingWeb 後端 — Zeabur 部署（建置上下文：專案根目錄）
-# 於 Zeabur 建立服務時，服務名稱建議設為 backend，或設定 ZBPACK_DOCKERFILE_NAME=backend 使用 Dockerfile.backend
-FROM eclipse-temurin:21-jdk-alpine AS build
+# ShoppingWeb 全端（React + Spring Boot）— Zeabur 從 GitHub 部署預設使用此檔
+# Nginx 對外監聽 $PORT，/api 轉發至同容器內 Java :8080
+
+FROM eclipse-temurin:21-jdk-alpine AS backend-build
 WORKDIR /app
 
 COPY backend/pom.xml .
@@ -13,12 +14,34 @@ RUN ./mvnw -B -q dependency:go-offline
 COPY backend/src ./src
 RUN ./mvnw -B -q package -DskipTests
 
+FROM node:22-alpine AS frontend-build
+WORKDIR /app
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend/ .
+
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+RUN npm run build
+
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
 
-COPY --from=build /app/target/*.jar /app/app.jar
+RUN apk add --no-cache nginx gettext \
+  && mkdir -p /var/lib/nginx /var/log/nginx /run/nginx \
+  && chown -R nginx:nginx /var/lib/nginx /var/log/nginx /run/nginx
+
+COPY --from=backend-build /app/target/*.jar /app/app.jar
+COPY --from=frontend-build /app/dist /usr/share/nginx/html
+COPY docker/nginx.fullstack.conf.template /etc/nginx/conf.d/default.conf.template
+COPY docker/start-fullstack.sh /start-fullstack.sh
+RUN chmod +x /start-fullstack.sh
+
+ENV PORT=8080
+ENV SERVER_PORT=8080
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+CMD ["/start-fullstack.sh"]
