@@ -1,0 +1,11 @@
+.git
+.idea
+**/.idea
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/target
+**/*.iml
+frontend/.dockerignore
+backend/.dockerignore

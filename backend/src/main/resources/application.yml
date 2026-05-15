@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /api
 
@@ -7,11 +7,11 @@ spring:
   application:
     name: backend
 
-  # MySQL Database Configuration
+  # MySQL Database Configuration（可用 SPRING_DATASOURCE_* 環境變數覆寫）
   datasource:
-    url: jdbc:mysql://localhost:3306/shopping_web?useSSL=false&serverTimezone=Asia/Taipei
-    username: root
-    password: "0000"
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/shopping_web?useSSL=false&serverTimezone=Asia/Taipei}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # JPA Configuration
