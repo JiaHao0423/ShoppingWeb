@@ -29,7 +29,7 @@ RUN npm run build
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-RUN apk add --no-cache nginx gettext \
+RUN apk add --no-cache nginx gettext wget \
   && mkdir -p /var/lib/nginx /var/log/nginx /run/nginx /etc/nginx/http.d \
   && rm -f /etc/nginx/conf.d/default.conf /etc/nginx/http.d/default.conf 2>/dev/null || true \
   && chown -R nginx:nginx /var/lib/nginx /var/log/nginx /run/nginx
