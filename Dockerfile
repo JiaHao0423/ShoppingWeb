@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ShoppingWeb 全端（React + Spring Boot）— Zeabur 從 GitHub 部署預設使用此檔
-# Nginx 對外監聽 $PORT，/api 轉發至同容器內 Java :8080
+# Nginx 對外監聽 Zeabur 的 $PORT；Java 在 $BACKEND_PORT（預設 8081）
 
 FROM eclipse-temurin:21-jdk-alpine AS backend-build
 WORKDIR /app
@@ -42,7 +42,7 @@ RUN chmod +x /start-fullstack.sh \
   && sed -i 's/\r$//' /start-fullstack.sh
 
 ENV PORT=8080
-ENV SERVER_PORT=8080
+ENV BACKEND_PORT=8081
 
 EXPOSE 8080
 
