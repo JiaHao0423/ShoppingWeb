@@ -30,14 +30,16 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 RUN apk add --no-cache nginx gettext \
-  && mkdir -p /var/lib/nginx /var/log/nginx /run/nginx \
+  && mkdir -p /var/lib/nginx /var/log/nginx /run/nginx /etc/nginx/http.d \
+  && rm -f /etc/nginx/conf.d/default.conf /etc/nginx/http.d/default.conf 2>/dev/null || true \
   && chown -R nginx:nginx /var/lib/nginx /var/log/nginx /run/nginx
 
 COPY --from=backend-build /app/target/*.jar /app/app.jar
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
-COPY docker/nginx.fullstack.conf.template /etc/nginx/conf.d/default.conf.template
+COPY docker/nginx.fullstack.conf.template /etc/nginx/http.d/default.conf.template
 COPY docker/start-fullstack.sh /start-fullstack.sh
-RUN chmod +x /start-fullstack.sh
+RUN chmod +x /start-fullstack.sh \
+  && sed -i 's/\r$//' /start-fullstack.sh
 
 ENV PORT=8080
 ENV SERVER_PORT=8080
