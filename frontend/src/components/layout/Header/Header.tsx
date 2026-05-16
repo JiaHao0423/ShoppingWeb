@@ -1,28 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import clsx from "clsx";
-import "./Header.scss";
-import Logo from "@/assets/header/logo.svg";
+import { ChevronLeft, Heart, Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import HamburgerButton from "./HamburgerButton";
-import SearchBar from "./SearchBar";
-import HeaderIcons from "./HeaderIcons";
-import DropdownMenu from "./DropdownMenu";
-import DesktopMenu from "./DesktopMenu";
+import { useCart } from "@/contexts/CartContext";
+import MobileMenu, { type MobileMenuCategory } from "./MobileMenu";
 import { MENU_CATEGORIES } from "@/constants/menuData.js";
-import { IMAGE_CATEGORIES } from "@/constants/menuData.js";
 import { ROUTES } from "@/constants/routes";
+import { HOME_NAV_LINKS } from "@/constants/homeContent";
 import ProductService from "@/services/productService";
 
 type HeaderProps = {
   variant?: string;
 };
 
-type HeaderMenuCategory = {
-  id: string;
-  name: string;
-  items: Array<{ name: string; path: string }>;
-};
+const MINIMAL_VARIANTS = new Set(["cart", "checkout", "order-complete", "member", "order-list", "auth"]);
 
 const normalizeParentCategory = (value?: string | null): "tops" | "bottoms" | "onePiece" | "others" => {
   if (!value) return "others";
@@ -30,7 +21,7 @@ const normalizeParentCategory = (value?: string | null): "tops" | "bottoms" | "o
   return "others";
 };
 
-const buildGroupedMenu = (categories: Array<{ id: number; name: string; parentCategory?: string | null }>): HeaderMenuCategory[] => {
+const buildGroupedMenu = (categories: Array<{ id: number; name: string; parentCategory?: string | null }>): MobileMenuCategory[] => {
   const groupedItems: Record<"tops" | "bottoms" | "onePiece" | "others", Array<{ name: string; path: string }>> = {
     tops: [],
     bottoms: [],
@@ -46,41 +37,39 @@ const buildGroupedMenu = (categories: Array<{ id: number; name: string; parentCa
     });
   });
 
-  const groups: HeaderMenuCategory[] = [
+  return [
     { id: "tops", name: "上衣", items: groupedItems.tops },
     { id: "bottoms", name: "下身", items: groupedItems.bottoms },
     { id: "onePiece", name: "連身", items: groupedItems.onePiece },
     { id: "others", name: "其他", items: groupedItems.others },
-  ];
-
-  return groups.filter((group) => group.items.length > 0);
+  ].filter((group) => group.items.length > 0);
 };
 
 const Header = ({ variant = "default" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("");
-  const [menuCategories, setMenuCategories] = useState<HeaderMenuCategory[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [menuCategories, setMenuCategories] = useState<MobileMenuCategory[]>([]);
   const { isAuthenticated } = useAuth();
+  const { cartItemsCount } = useCart();
   const navigate = useNavigate();
+
   const isSearchPage = variant === "search";
+  const isMinimal = MINIMAL_VARIANTS.has(variant);
 
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchCategories = async () => {
       try {
-        const categories = (await ProductService.getAllCategories()) as Array<{ id: number; name: string; parentCategory?: string | null }>;
-        const normalized = buildGroupedMenu(categories);
-        setMenuCategories(normalized);
-        if (normalized.length > 0) {
-          setActiveTab(normalized[0].id);
-        }
+        const categories = (await ProductService.getAllCategories()) as Array<{
+          id: number;
+          name: string;
+          parentCategory?: string | null;
+        }>;
+        setMenuCategories(buildGroupedMenu(categories));
       } catch (error) {
-        if (controller.signal.aborted) return;
-        console.error("Failed to load header categories:", error);
+        if (!controller.signal.aborted) console.error("Failed to load header categories:", error);
       }
     };
-
     fetchCategories();
     return () => controller.abort();
   }, []);
@@ -94,21 +83,8 @@ const Header = ({ variant = "default" }: HeaderProps) => {
       })),
     []
   );
+
   const categories = menuCategories.length > 0 ? menuCategories : fallbackCategories;
-
-  const toggleMenu = useCallback(() => {
-    setIsMenuOpen((prev) => {
-      const newState = !prev;
-      if (newState && categories.length > 0) {
-        setActiveTab(categories[0].id);
-      }
-      return newState;
-    });
-  }, [categories]);
-
-  const handleTabClick = useCallback((tabId: string) => {
-    setActiveTab(tabId);
-  }, []);
 
   const handleItemClick = useCallback(
     (path: string) => {
@@ -118,84 +94,125 @@ const Header = ({ variant = "default" }: HeaderProps) => {
     [navigate]
   );
 
-  const handleBackClick = useCallback(() => {
-    window.history.back();
-  }, []);
-
   const handleSearch = useCallback(
     (query: string) => {
-      if (!query.trim()) return;
-      navigate(`${ROUTES.SEARCH}?q=${encodeURIComponent(query)}`);
+      const trimmed = query.trim();
+      if (!trimmed) return;
+      navigate(`${ROUTES.SEARCH}?q=${encodeURIComponent(trimmed)}`);
       setIsMenuOpen(false);
     },
     [navigate]
   );
 
-  const handleMemberClick = useCallback(() => {
-    navigate(isAuthenticated ? ROUTES.MEMBER : ROUTES.LOGIN);
-  }, [navigate, isAuthenticated]);
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSearch(searchQuery);
+  };
 
-  const rootClass = clsx("header", `header--${variant}`, {
-    "header--orange": isMenuOpen,
-  });
+  const openMenu = () => setIsMenuOpen(true);
 
-  const wrapperClass = clsx("header__wrapper", {
-    "header__wrapper--search": isSearchPage,
-  });
+  const ActionIcons = ({ light = false }: { light?: boolean }) => (
+    <div className={`site-header__end${light ? " site-header__end--light" : ""}`}>
+      {!isSearchPage && (
+        <button type="button" className="site-header__icon-btn" onClick={() => navigate(ROUTES.SEARCH)} aria-label="搜尋">
+          <Search />
+        </button>
+      )}
+      <button type="button" className="site-header__icon-btn site-header__icon-btn--cart" onClick={() => navigate(ROUTES.CART)} aria-label="購物車">
+        <ShoppingBag />
+        <span className="site-header__cart-badge">{cartItemsCount > 99 ? "99+" : cartItemsCount}</span>
+      </button>
+      <button
+        type="button"
+        className="site-header__icon-btn site-header__icon-btn--account"
+        onClick={() => navigate(isAuthenticated ? ROUTES.MEMBER : ROUTES.LOGIN)}
+        aria-label="帳戶"
+      >
+        <User />
+      </button>
+    </div>
+  );
+
+  if (isMinimal) {
+    return (
+      <header className="site-header site-header--minimal">
+        <div className="site-header__shell">
+          <div className="site-header__bar">
+            <div className="site-header__start" />
+            <Link to={ROUTES.HOME} className="site-header__logo" aria-label="回到首頁">
+              <Heart className="site-header__logo-icon" />
+              <span className="site-header__logo-text">NY</span>
+            </Link>
+            <ActionIcons light />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  if (isSearchPage) {
+    return (
+      <>
+        <header className="site-header">
+          <div className="site-header__shell">
+            <div className="site-header__bar site-header__bar--search">
+              <button type="button" className="site-header__icon-btn site-header__icon-btn--back" onClick={() => window.history.back()} aria-label="上一頁">
+                <ChevronLeft />
+              </button>
+              <button type="button" className="site-header__icon-btn site-header__icon-btn--menu-desktop" onClick={openMenu} aria-label="開啟選單">
+                <Menu />
+              </button>
+              <form onSubmit={handleSearchSubmit} className="site-header__search-form">
+                <Search className="site-header__search-icon" aria-hidden />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="搜尋商品..."
+                  className="site-header__search-input"
+                  autoFocus
+                />
+              </form>
+              <Link to={ROUTES.HOME} className="site-header__logo site-header__logo--inline" aria-label="回到首頁">
+                <Heart className="site-header__logo-icon" />
+                <span className="site-header__logo-text">NY</span>
+              </Link>
+              <ActionIcons />
+            </div>
+          </div>
+        </header>
+        <MobileMenu open={isMenuOpen} categories={categories} onClose={() => setIsMenuOpen(false)} onItemClick={handleItemClick} />
+      </>
+    );
+  }
 
   return (
-    <header className={rootClass}>
-      <div className="container">
-        <div className={wrapperClass}>
-          <HamburgerButton isOpen={isMenuOpen} isSearchPage={isSearchPage} onClick={toggleMenu} />
-
-          {isSearchPage && (
-            <button className="header__current-button" aria-label="上一頁" onClick={handleBackClick}>
-              <svg className="header__current-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M16.5 3.25 L7.75 12 L16.5 20.75"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
-
-          <Link
-            to={ROUTES.HOME}
-            className={clsx("header__logo", { "header__logo--search": isSearchPage })}
-            aria-label="回到首頁"
-          >
-            <div className="header__logo-box">
-              <img src={Logo} alt="logo" />
+    <>
+      <header className="site-header">
+        <div className="site-header__shell">
+          <div className="site-header__bar">
+            <div className="site-header__start">
+              <button type="button" className="site-header__icon-btn site-header__icon-btn--menu" onClick={openMenu} aria-label="開啟選單">
+                <Menu />
+              </button>
+              <nav className="site-header__nav" aria-label="主要導覽">
+                {HOME_NAV_LINKS.map((link) => (
+                  <Link key={link.label} to={link.path} className="site-header__nav-link">
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
             </div>
-          </Link>
-
-          {isSearchPage && <SearchBar onSearch={handleSearch} />}
-
-          <HeaderIcons
-            isMenuOpen={isMenuOpen}
-            isSearchPage={isSearchPage}
-            onSearchClick={() => navigate(ROUTES.SEARCH)}
-            onCartClick={() => navigate(ROUTES.CART)}
-            onMemberClick={handleMemberClick}
-          />
+            <Link to={ROUTES.HOME} className="site-header__logo" aria-label="回到首頁">
+              <Heart className="site-header__logo-icon" />
+              <span className="site-header__logo-text">NY</span>
+            </Link>
+            <ActionIcons />
+          </div>
         </div>
-      </div>
-
-      <DropdownMenu
-        isOpen={isMenuOpen}
-        activeTab={activeTab}
-        categories={categories}
-        images={IMAGE_CATEGORIES}
-        onTabClick={handleTabClick}
-        onItemClick={handleItemClick}
-      />
-
-      <DesktopMenu isOpen={isMenuOpen} categories={categories} images={IMAGE_CATEGORIES} onItemClick={handleItemClick} />
-    </header>
+      </header>
+      <MobileMenu open={isMenuOpen} categories={categories} onClose={() => setIsMenuOpen(false)} onItemClick={handleItemClick} />
+    </>
   );
 };
 

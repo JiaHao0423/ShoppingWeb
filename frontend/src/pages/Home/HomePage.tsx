@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import DefaultLayout from "@/components/layout/DefaultLayout";
-import Carousel from "@/components/carousel/Carousel";
-import ProductSection, { type ProductSectionItem } from "@/components/productSection/ProductSection";
+import HeroCarousel from "@/components/home/HeroCarousel";
+import ProductCard from "@/components/home/ProductCard";
+import SectionHeading from "@/components/home/SectionHeading";
+import type { ProductSectionItem } from "@/components/productSection/ProductSection";
 import ProductService from "@/services/productService";
+import { ROUTES } from "@/constants/routes";
+import { HOME_CATEGORY_TILES, HOME_INSTAGRAM_IMAGES } from "@/constants/homeContent";
 import { PageLoading } from "@/components/ui/page-loading";
 
 type ProductListResponse = {
   content: ProductSectionItem[];
 };
 
+const InstagramIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="home__tile-ig-icon" fill="currentColor" aria-hidden>
+    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-2.25a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+  </svg>
+);
+
 const HomePage = () => {
   const [products, setProducts] = useState<ProductSectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchProducts = async () => {
       try {
         setLoading(true);
@@ -26,30 +39,120 @@ const HomePage = () => {
         setError("取得產品資訊失敗，請稍後再試。");
         console.error("Error fetching products:", err);
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
-
     fetchProducts();
     return () => controller.abort();
   }, []);
 
-  if (loading) {
-    return <PageLoading />;
-  }
+  if (loading) return <PageLoading />;
 
   if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
+    return (
+      <DefaultLayout>
+        <p className="home__error">{error}</p>
+      </DefaultLayout>
+    );
   }
+
+  const bestSellers = products.slice(0, 4);
+  const newArrivals = products.slice(4, 8).length > 0 ? products.slice(4, 8) : products.slice(0, 4);
 
   return (
     <DefaultLayout>
-      <Carousel />
-      <ProductSection title="熱銷商品" products={products} viewAllLink="/hot-products" />
-      <ProductSection title="新品推薦" products={products} viewAllLink="/new-arrivals" />
+      <main className="home">
+        <HeroCarousel />
+
+        <section className="home__section">
+          <div className="home__section-inner">
+            <div className="home__grid-4">
+              {HOME_CATEGORY_TILES.map((cat) => (
+                <Link key={cat.label} to={cat.path} className="home__tile">
+                  <img src={cat.image} alt={cat.label} className="home__tile-img" />
+                  <div className="home__tile-gradient" />
+                  <div className="home__tile-label-wrap">
+                    <span className="home__tile-label">{cat.label}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="home__section home__section--muted">
+          <div className="home__section-inner">
+            <SectionHeading label="BEST SELLERS" title="熱銷商品" />
+            <div className="home__grid-4">
+              {bestSellers.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            <div className="home__section-cta">
+              <button type="button" onClick={() => navigate(ROUTES.SEARCH)} className="home__cta home__cta--secondary">
+                查看更多
+                <ArrowRight aria-hidden />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="home__banner">
+          <img
+            src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&h=800&fit=crop"
+            alt=""
+            className="home__banner-img"
+          />
+          <div className="home__banner-overlay" />
+          <div className="home__banner-content">
+            <div className="home__banner-card">
+              <p className="home__banner-eyebrow">SPRING COLLECTION 2026</p>
+              <h2 className="home__banner-title">發現屬於你的獨特風格</h2>
+              <p className="home__banner-desc">本季主打柔和色調與流暢輪廓，讓每一次出場都更有層次。</p>
+              <button type="button" onClick={() => navigate(ROUTES.SEARCH)} className="home__cta home__cta--primary">
+                立即選購
+                <ArrowRight aria-hidden />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="home__section">
+          <div className="home__section-inner">
+            <SectionHeading label="NEW ARRIVALS" title="新品推薦" />
+            <div className="home__grid-4">
+              {newArrivals.map((product) => (
+                <ProductCard key={`new-${product.id}`} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="home__section home__section--accent">
+          <div className="home__section-inner">
+            <SectionHeading label="FOLLOW US" title="@fashionelegance" />
+            <div className="home__grid-4">
+              {HOME_INSTAGRAM_IMAGES.map((src) => (
+                <a
+                  key={src}
+                  href="https://www.instagram.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="home__tile home__tile--square"
+                >
+                  <img src={src} alt="" className="home__tile-img" />
+                  <div className="home__tile-ig-overlay">
+                    <InstagramIcon />
+                    <span className="visually-hidden">Instagram</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
     </DefaultLayout>
   );
 };
+
 export default HomePage;
