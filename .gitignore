@@ -1,4 +1,8 @@
 .env
 .env.*
 !.env.example
+
+# IDE
+.idea/
+
 _ref-homepage-v1/
