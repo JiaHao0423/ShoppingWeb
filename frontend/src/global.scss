@@ -35,7 +35,8 @@ ul, ol {
   list-style: none;
 }
 
-button:not([data-slot="button"]) {
+/* 僅重置無 class 的裸 button；避免覆蓋 .auth__submit-btn 等元件樣式 */
+button:not([data-slot="button"]):not([class]) {
   border: none;
   background: none;
   cursor: pointer;

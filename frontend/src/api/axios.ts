@@ -1,6 +1,9 @@
 import axios, { AxiosError } from "axios";
 
-const apiBaseURL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
+/** 生產環境預設走同網域 Nginx `/api` 代理；開發環境才連本機後端 */
+const apiBaseURL =
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.PROD ? "/api" : "http://localhost:8080/api");
 
 const apiClient = axios.create({
   baseURL: apiBaseURL,
@@ -64,12 +67,23 @@ apiClient.interceptors.response.use(
     }
 
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("userRoles");
+      const requestUrl = String(originalRequest?.url ?? "");
+      const isAuthFlow =
+        requestUrl.includes("/auth/login") ||
+        requestUrl.includes("/auth/register") ||
+        requestUrl.includes("/auth/forgot-password") ||
+        requestUrl.includes("/auth/reset-password");
 
-      if (window.location.pathname !== "/" && !window.location.pathname.startsWith("/product")) {
-        window.location.href = "/login";
+      if (!isAuthFlow) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userRoles");
+
+        const path = window.location.pathname;
+        const isPublicPage = path === "/" || path.startsWith("/product") || path.startsWith("/login") || path.startsWith("/register");
+        if (!isPublicPage) {
+          window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);

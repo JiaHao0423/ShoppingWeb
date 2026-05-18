@@ -199,7 +199,7 @@
 // ============================================================
 // 主按鈕
 // ============================================================
-.auth__submit-btn {
+button.auth__submit-btn {
   width: 100%;
   padding: 14px;
   border: none;
@@ -363,10 +363,11 @@
   cursor: not-allowed;
 }
 
-.auth__submit-btn:disabled {
-  background-color: $secondary-color;
+button.auth__submit-btn:disabled {
+  background-color: $primary-color;
+  opacity: 0.65;
 
   &:hover {
-    background-color: $secondary-color;
+    background-color: $primary-color;
   }
 }
