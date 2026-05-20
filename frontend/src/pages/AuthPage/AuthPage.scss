@@ -6,7 +6,7 @@
 // Block: .auth — 認證頁面（註冊 / 登入 / 第三方登入共用）
 // ============================================================
 .auth {
-  background-color: $bg-color;
+  background-color: $page-bg;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -85,14 +85,14 @@
 }
 
 .auth__title {
-  font-size: 36px;
-  font-weight: 700;
+  font-family: $font-display;
+  font-size: 1.75rem;
+  font-weight: 600;
   color: $text-color;
   margin: 0 0 8px;
 
   @include desktop {
     font-size: 2rem;
-    font-weight: 500;
   }
 }
 
@@ -203,7 +203,7 @@ button.auth__submit-btn {
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: 10px;
+  border-radius: $radius-sm;
   background-color: $primary-color;
   color: #fff;
   font-size: $font-size-base;

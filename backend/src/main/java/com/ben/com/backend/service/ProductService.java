@@ -10,6 +10,7 @@ import com.ben.com.backend.model.Product;
 import com.ben.com.backend.model.ProductVariant;
 import com.ben.com.backend.repository.CategoryRepository;
 import com.ben.com.backend.repository.ProductRepository;
+import com.ben.com.backend.util.UnsplashImages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -105,7 +106,7 @@ public class ProductService {
       .name(product.getName())
       .description(product.getDescription())
       .price(product.getPrice())
-      .imageUrl(product.getImageUrl())
+      .imageUrl(UnsplashImages.resolveProductImage(product.getImageUrl(), product.getId()))
       .category(convertToCategoryResponse(product.getCategory()))
       .variants(variantResponses)
       .build();
@@ -117,7 +118,7 @@ public class ProductService {
       .color(variant.getColor())
       .size(variant.getSize())
       .stock(variant.getStock())
-      .imageUrl(variant.getImageUrl())
+      .imageUrl(UnsplashImages.resolveVariantImage(variant.getImageUrl(), variant.getProduct().getId()))
       .build();
   }
 

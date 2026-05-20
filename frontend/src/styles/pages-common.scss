@@ -1,0 +1,116 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+@use "./site-layout" as site;
+
+// 交易／會員流程頁共用：與首頁同一套紙質背景與字體
+.page-flow {
+  min-height: 100vh;
+  background: $page-bg;
+  color: $text-color;
+  font-family: $font-family;
+
+  &__mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: $color-ink;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    @include desktop {
+      display: none;
+    }
+  }
+
+  &__mobile-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  &__mobile-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  &__body {
+    @include site.site-container;
+    padding-block: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  &__empty,
+  &__error {
+    padding: clamp(3rem, 8vw, 5rem) 1rem;
+    text-align: center;
+    color: $secondary-color;
+    font-size: $font-size-base;
+  }
+
+  &__error {
+    color: $color-accent-deep;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: $font-size-base;
+  font-weight: 600;
+  font-family: $font-family;
+  color: #fff;
+  background: $primary-color;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: $color-accent-deep;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: $font-size-base;
+  font-weight: 500;
+  font-family: $font-family;
+  color: $text-color;
+  background: transparent;
+  border: 1px solid $color-line-strong;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+}

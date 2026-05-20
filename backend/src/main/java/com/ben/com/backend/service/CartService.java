@@ -10,6 +10,7 @@ import com.ben.com.backend.model.*;
 import com.ben.com.backend.repository.CartItemRepository;
 import com.ben.com.backend.repository.CartRepository;
 import com.ben.com.backend.repository.ProductVariantRepository;
+import com.ben.com.backend.util.UnsplashImages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,7 +135,9 @@ public class CartService {
         .color(productVariant.getColor())
         .size(productVariant.getSize())
         .stock(productVariant.getStock())
-        .imageUrl(productVariant.getImageUrl() != null ? productVariant.getImageUrl() : product.getImageUrl())
+        .imageUrl(UnsplashImages.resolveVariantImage(
+          productVariant.getImageUrl() != null ? productVariant.getImageUrl() : product.getImageUrl(),
+          product.getId()))
         .productName(product.getName())
         .price(product.getPrice())
         .build())

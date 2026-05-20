@@ -9,6 +9,7 @@ import type { ProductSectionItem } from "@/components/productSection/ProductSect
 import ProductService from "@/services/productService";
 import { ROUTES } from "@/constants/routes";
 import { HOME_CATEGORY_TILES, HOME_INSTAGRAM_IMAGES } from "@/constants/homeContent";
+import { UNSPLASH_IMAGES } from "@/constants/unsplashImages";
 import { PageLoading } from "@/components/ui/page-loading";
 
 type ProductListResponse = {
@@ -82,7 +83,7 @@ const HomePage = () => {
 
         <section className="home__section home__section--muted">
           <div className="home__section-inner">
-            <SectionHeading label="BEST SELLERS" title="熱銷商品" />
+            <SectionHeading kicker="店內熱門" title="熱銷商品" />
             <div className="home__grid-4">
               {bestSellers.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -99,18 +100,18 @@ const HomePage = () => {
 
         <section className="home__banner">
           <img
-            src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&h=800&fit=crop"
+            src={UNSPLASH_IMAGES.banner}
             alt=""
             className="home__banner-img"
           />
           <div className="home__banner-overlay" />
           <div className="home__banner-content">
-            <div className="home__banner-card">
-              <p className="home__banner-eyebrow">SPRING COLLECTION 2026</p>
-              <h2 className="home__banner-title">發現屬於你的獨特風格</h2>
-              <p className="home__banner-desc">本季主打柔和色調與流暢輪廓，讓每一次出場都更有層次。</p>
+            <div className="home__banner-copy">
+              <p className="home__banner-kicker">本季精選</p>
+              <h2 className="home__banner-title">襯衫與針織的週間組合</h2>
+              <p className="home__banner-desc">同色系三件套，上班與週末都能直接套用。</p>
               <button type="button" onClick={() => navigate(ROUTES.SEARCH)} className="home__cta home__cta--primary">
-                立即選購
+                前往選購
                 <ArrowRight aria-hidden />
               </button>
             </div>
@@ -119,7 +120,7 @@ const HomePage = () => {
 
         <section className="home__section">
           <div className="home__section-inner">
-            <SectionHeading label="NEW ARRIVALS" title="新品推薦" />
+            <SectionHeading kicker="剛上架" title="新品推薦" />
             <div className="home__grid-4">
               {newArrivals.map((product) => (
                 <ProductCard key={`new-${product.id}`} product={product} />
@@ -128,9 +129,9 @@ const HomePage = () => {
           </div>
         </section>
 
-        <section className="home__section home__section--accent">
+        <section className="home__section">
           <div className="home__section-inner">
-            <SectionHeading label="FOLLOW US" title="@fashionelegance" />
+            <SectionHeading kicker="社群" title="日常穿搭紀錄" align="center" />
             <div className="home__grid-4">
               {HOME_INSTAGRAM_IMAGES.map((src) => (
                 <a

@@ -3,97 +3,144 @@
 
 .sidebar__overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 10;
+  inset: 0;
+  z-index: 30;
+  background: rgb(28 26 24 / 0.45);
+
   @include desktop {
     display: none;
   }
 }
 
 .sidebar {
-  // 預設：手機版（橫向 filter 列 + bottom sheet）
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: 21px 30px;
-  background-color: #fff;
-  gap: 38px;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  width: 100%;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @include desktop {
     flex-direction: column;
-    width: 200px;
-    background-color: #f5f5f5;
-    padding: 0;
-    overflow-x: visible;
+    align-items: stretch;
     gap: 0;
+    padding: 0;
+    overflow: visible;
   }
 
   &__section {
     flex-shrink: 0;
 
     @include desktop {
-      padding-bottom: $spacing-lg;
-      margin-bottom: 40px;
       width: 100%;
-      border-bottom: #CCCCCC 0.5px solid;
-    }
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgb(44 44 44 / 0.08);
 
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+    }
   }
 
   &__tab {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 0.25rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: $text-color;
+    border: 1px solid $color-line;
+    border-radius: $radius-sm;
+    background: $color-surface;
+    transition: border-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      border-color: $color-line-strong;
+    }
+
+    &--active {
+      color: $text-color;
+      border-color: $text-color;
+      background: $color-surface;
+      font-weight: 600;
+    }
 
     @include desktop {
       justify-content: space-between;
       width: 100%;
-      margin-bottom: 10px;
-    }
+      padding: 0.25rem 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      white-space: normal;
+      color: $text-color;
+      border: none;
+      border-radius: 0;
+      background: transparent;
 
+      &:hover {
+        color: $primary-color;
+        background: transparent;
+      }
+
+      &--active {
+        color: $primary-color;
+        background: transparent;
+      }
+    }
   }
 
   &__tab-title {
-    font-size: $font-size-base;
-
     @include desktop {
-      font-size: 20px;
+      font-size: 0.9375rem;
+      font-weight: 600;
     }
   }
 
   &__tab-arrow {
-    width: 20px;
-    height: 20px;
-    color: #333;
+    width: 1rem;
+    height: 1rem;
+    color: currentColor;
+    opacity: 0.7;
+    transition: transform 0.25s ease;
 
     &--active {
       transform: rotate(180deg);
+    }
+
+    @include desktop {
+      width: 1.125rem;
+      height: 1.125rem;
     }
   }
 
   &__content {
     position: fixed;
+    right: 0;
     bottom: 0;
     left: 0;
-    right: 0;
-    background-color: #fff;
-    z-index: 1000;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-    padding: 20px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-out;
-    max-height: 70vh;
-    overflow-y: auto;
+    z-index: 40;
     display: block;
+    max-height: 70vh;
+    padding: 1.25rem 1.5rem 2rem;
+    overflow-y: auto;
+    background: $page-bg;
+    border-radius: $radius-lg $radius-lg 0 0;
+    box-shadow: 0 -8px 32px rgb(28 26 24 / 0.12);
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 
     &--open {
       transform: translateY(0);
@@ -101,14 +148,17 @@
 
     @include desktop {
       position: static;
-      transform: none;
-      box-shadow: none;
-      border-radius: 0;
-      padding: 0;
       max-height: 0;
+      padding: 0;
       overflow: hidden;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      transform: none;
+      transition: max-height 0.35s ease;
+
       &--open {
-        max-height: 500px;
+        max-height: 24rem;
       }
     }
   }
@@ -116,50 +166,69 @@
   &__options {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
 
     @include desktop {
-      background-color: #F1F1F1;
+      padding-top: 0.5rem;
     }
   }
 
   &__option {
-    font-size: $font-size-base;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9375rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgb(212 165 165 / 0.1);
+    }
   }
 
-  &__radio:checked {
-    color: red;
+  &__radio {
+    width: 1rem;
+    height: 1rem;
+    accent-color: $primary-color;
+    cursor: pointer;
+  }
+
+  &__label {
+    color: $text-color;
   }
 
   &__price-slider {
-    padding: 0;
+    padding-top: 0.75rem;
 
     @include desktop {
-      background-color: #F1F1F1;
+      padding-top: 0.5rem;
     }
   }
 
   &__slider-wrapper {
     position: relative;
-    height: 24px;
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    height: 1.5rem;
+    margin-bottom: 0.75rem;
 
     .slider__track {
       position: absolute;
       width: 100%;
       height: 4px;
-      background-color: #d1d1d1;
-      border-radius: 2px;
+      border-radius: 9999px;
+      background: rgb(44 44 44 / 0.12);
     }
 
     .slider__range {
       position: absolute;
-      height: 4px;
-      background-color: #4caf50;
-      border-radius: 2px;
       z-index: 1;
+      height: 4px;
+      border-radius: 9999px;
+      background: $primary-color;
     }
   }
 
@@ -167,41 +236,36 @@
     position: absolute;
     width: 100%;
     height: 4px;
+    margin: 0;
     background: transparent;
     pointer-events: none;
-    -webkit-appearance: none;
     appearance: none;
     z-index: 2;
-    margin: 0;
 
     &::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      background: #ffffff;
-      border: 1px solid #333;
+      width: 1.125rem;
+      height: 1.125rem;
+      border: 2px solid #fff;
       border-radius: 50%;
+      background: $primary-color;
+      box-shadow: 0 2px 8px rgb(212 165 165 / 0.45);
       cursor: pointer;
       pointer-events: auto;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      appearance: none;
     }
 
     &::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      background: #ffffff;
-      border: 1px solid #333;
+      width: 1.125rem;
+      height: 1.125rem;
+      border: 2px solid #fff;
       border-radius: 50%;
+      background: $primary-color;
+      box-shadow: 0 2px 8px rgb(212 165 165 / 0.45);
       cursor: pointer;
       pointer-events: auto;
     }
 
-    &::-webkit-slider-runnable-track {
-      background: transparent;
-      border: none;
-    }
-
+    &::-webkit-slider-runnable-track,
     &::-moz-range-track {
       background: transparent;
       border: none;
@@ -217,9 +281,9 @@
   }
 
   &__price-display {
-    font-size: $font-size-lg;
-    color: #b0b0b0;
-    font-weight: 400;
-    margin-top: 4px;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $secondary-color;
   }
 }

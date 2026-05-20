@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { useParams, useSearchParams } from "react-router-dom";
 import DefaultLayout from "@/components/layout/DefaultLayout";
-import ProductSection from "@/components/productSection/ProductSection";
+import ProductCard from "@/components/home/ProductCard";
+import SectionHeading from "@/components/home/SectionHeading";
+import type { ProductSectionItem } from "@/components/productSection/ProductSection";
 import Sidebar from "@/components/sidebar/Sidebar";
 import ProductService from "@/services/productService";
 import { PageLoading } from "@/components/ui/page-loading";
+import { resolveProductImageUrl } from "@/constants/unsplashImages";
 import "./SearchPage.scss";
 
 /** URL path segment（如 /products/jeans）對應到 Sidebar 篩選用的 value */
@@ -28,16 +32,11 @@ type Filters = {
   priceRange: [number, number];
 };
 
-type Product = {
-  id: number;
-  name: string;
-  price: number;
+type Product = ProductSectionItem & {
   categoryId: string;
   categoryName: string;
   color: string;
   size: string;
-  image: string;
-  isHot: boolean;
 };
 
 const SearchPage = () => {
@@ -46,6 +45,7 @@ const SearchPage = () => {
   const categoryIdFromQuery = searchParams.get("categoryId") ?? "";
   const categoryFromQuery = searchParams.get("category") ?? "";
   const keyword = (searchParams.get("q") ?? "").trim().toLowerCase();
+  const keywordDisplay = (searchParams.get("q") ?? "").trim();
 
   const resolvedInitialCategory = useMemo(() => {
     if (categoryIdFromQuery) return categoryIdFromQuery;
@@ -82,7 +82,15 @@ const SearchPage = () => {
           ProductService.getProducts(null, 0, 200, controller.signal),
         ])) as [
           Array<{ id: number; name: string }>,
-          { content?: Array<{ id: number; name: string; price: number | string; imageUrl?: string; category?: { id: number; name: string } }> }
+          {
+            content?: Array<{
+              id: number;
+              name: string;
+              price: number | string;
+              imageUrl?: string;
+              category?: { id: number; name: string };
+            }>;
+          },
         ];
 
         const normalizedCategories = categoriesResponse.map((category) => ({
@@ -99,8 +107,7 @@ const SearchPage = () => {
           categoryName: product.category?.name ?? "",
           color: "",
           size: "",
-          image: product.imageUrl ?? "https://via.placeholder.com/200",
-          isHot: false,
+          imageUrl: resolveProductImageUrl(product.imageUrl, product.id),
         }));
         setProducts(normalizedProducts);
       } catch (err) {
@@ -117,6 +124,7 @@ const SearchPage = () => {
     fetchSearchData();
     return () => controller.abort();
   }, []);
+
   const handleFilterChange = (newFilters: Partial<Filters> & { reset?: boolean }) => {
     if (newFilters.reset) {
       setFilters({ category: "", color: "", size: "", priceRange: [0, 10000] });
@@ -133,42 +141,97 @@ const SearchPage = () => {
     return !(product.price < filters.priceRange[0] || product.price > filters.priceRange[1]);
   });
 
-  const pageTitle = useMemo(() => {
-    if (keyword) return `搜尋結果：${searchParams.get("q")}`;
+  const hasActiveFilters =
+    Boolean(filters.category || filters.color || filters.size) ||
+    filters.priceRange[0] > 0 ||
+    filters.priceRange[1] < 10000;
+
+  const { headingKicker, headingTitle } = useMemo(() => {
+    if (keywordDisplay) {
+      return { headingKicker: "搜尋結果", headingTitle: `「${keywordDisplay}」` };
+    }
     const currentCategory = categoryOptions.find((option) => option.value === filters.category);
-    if (currentCategory) return `${currentCategory.label}分類`;
-    return "全部商品";
-  }, [filters.category, keyword, searchParams, categoryOptions]);
+    if (currentCategory) {
+      return { headingKicker: "分類", headingTitle: currentCategory.label };
+    }
+    return { headingKicker: "全部商品", headingTitle: "商品一覽" };
+  }, [filters.category, keywordDisplay, categoryOptions]);
 
   if (loading) {
     return <PageLoading />;
   }
 
   if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
+    return (
+      <DefaultLayout variant="search">
+        <main className="search">
+          <p className="search__error">{error}</p>
+        </main>
+      </DefaultLayout>
+    );
   }
 
   return (
     <DefaultLayout variant="search">
-      <div className="search-page">
-        <div className="search-page__layout">
-          <Sidebar onFilterChange={handleFilterChange} categories={categoryOptions} />
-          <div className="search-page__main">
-            {filteredProducts.length > 0 ? (
-              <ProductSection title={pageTitle} products={filteredProducts} viewAllLink="#" />
-            ) : (
-              <div className="search-page__empty">
-                <svg className="search-page__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-                <h2 className="search-page__empty-title">找不到符合的商品</h2>
-                <p className="search-page__empty-description">請嘗試調整篩選條件或使用其他關鍵字搜尋</p>
-              </div>
-            )}
+      <main className="search">
+        <section className="search__header">
+          <div className="search__inner">
+            <SectionHeading kicker={headingKicker} title={headingTitle} />
+            <div className="search__meta">
+              <p className="search__count">
+                共 <span>{filteredProducts.length}</span> 件商品
+              </p>
+              {hasActiveFilters && (
+                <button type="button" className="search__clear" onClick={() => handleFilterChange({ reset: true })}>
+                  清除篩選
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
+
+        <section className="search__body">
+          <div className="search__inner search__layout">
+            <div className="search__filters">
+              <div className="search__filters-head">
+                <SlidersHorizontal aria-hidden />
+                <span>篩選條件</span>
+              </div>
+              <Sidebar
+                onFilterChange={handleFilterChange}
+                categories={categoryOptions}
+                initialCategory={filters.category}
+                initialColor={filters.color}
+                initialSize={filters.size}
+                initialPriceRange={filters.priceRange}
+              />
+            </div>
+
+            <div className="search__results">
+              {filteredProducts.length > 0 ? (
+                <div className="search__grid">
+                  {filteredProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              ) : (
+                <div className="search__empty">
+                  <div className="search__empty-icon-wrap">
+                    <Search aria-hidden />
+                  </div>
+                  <h2 className="search__empty-title">找不到符合的商品</h2>
+                  <p className="search__empty-desc">請嘗試調整篩選條件，或使用其他關鍵字搜尋</p>
+                  {hasActiveFilters && (
+                    <button type="button" className="search__cta" onClick={() => handleFilterChange({ reset: true })}>
+                      清除所有篩選
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </main>
     </DefaultLayout>
   );
 };

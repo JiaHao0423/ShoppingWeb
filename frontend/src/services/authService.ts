@@ -1,4 +1,5 @@
 import axios from "@/api/axios";
+import { clearAuthStorage, persistAuthSession } from "@/utils/authSession";
 
 type AuthUser = {
   isAuthenticated: boolean;
@@ -42,13 +43,11 @@ const AuthService = {
   login: async (username: string, password: string): Promise<AuthResponse> => {
     const response = await axios.post<AuthResponse>("/auth/login", { username, password });
     if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      if (response.data.refreshToken) {
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-      } else {
-        localStorage.removeItem("refreshToken");
-      }
-      localStorage.setItem("userRoles", JSON.stringify(response.data.roles ?? []));
+      persistAuthSession({
+        token: response.data.token,
+        refreshToken: response.data.refreshToken,
+        roles: response.data.roles,
+      });
     }
     return response.data;
   },
@@ -59,13 +58,11 @@ const AuthService = {
 
     const response = await axios.post<AuthResponse>("/auth/refresh", { refreshToken });
     if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-    }
-    if (response.data.refreshToken) {
-      localStorage.setItem("refreshToken", response.data.refreshToken);
-    }
-    if (response.data.roles != null) {
-      localStorage.setItem("userRoles", JSON.stringify(response.data.roles));
+      persistAuthSession({
+        token: response.data.token,
+        refreshToken: response.data.refreshToken,
+        roles: response.data.roles,
+      });
     }
     return response.data;
   },
@@ -81,9 +78,7 @@ const AuthService = {
   },
 
   logout: (): void => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userRoles");
+    clearAuthStorage();
   },
 
   getCurrentUser: (): AuthUser => {

@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import OrderService from "@/services/orderService";
 import { PageLoading } from "@/components/ui/page-loading";
+import { resolveProductThumbUrl } from "@/constants/unsplashImages";
 import "./OrderListPage.scss";
 
 const ORDER_TABS = [
@@ -84,7 +85,7 @@ const OrderListPage = () => {
           statusKey: order.status,
           total: order.totalAmount,
           items: order.items.map((item) => ({
-            img: item.productVariant?.imageUrl || "https://via.placeholder.com/200",
+            img: resolveProductThumbUrl(item.productVariant?.imageUrl, item.productVariant?.id),
             price: item.price,
             qty: item.quantity,
           })),

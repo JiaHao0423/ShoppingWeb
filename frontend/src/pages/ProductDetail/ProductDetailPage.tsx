@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
+import { resolveProductImageUrl } from "@/constants/unsplashImages";
 import "./ProductDetailPage.scss";
 
 type Variant = {
@@ -26,12 +27,6 @@ type Product = {
   description?: string;
   variants: Variant[];
 };
-
-const HeartIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-);
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -53,7 +48,7 @@ const ProductDetailPage = () => {
         setLoading(true);
         const data = (await ProductService.getProductById(id || "")) as Product;
         setProduct(data);
-        setActiveImage(data.imageUrl || data.image || "");
+        setActiveImage(resolveProductImageUrl(data.imageUrl || data.image, data.id));
 
         if (data.variants && data.variants.length > 0) {
           const firstAvailable = data.variants.find((v) => v.stock > 0) || data.variants[0];
@@ -233,12 +228,8 @@ const ProductDetailPage = () => {
             </div>
 
             <div className="product-detail__actions">
-              <button className="product-detail__add-cart-btn" onClick={handleAddToCart}>
+              <button type="button" className="product-detail__add-cart-btn" onClick={handleAddToCart}>
                 加入購物車
-              </button>
-              <button className="product-detail__wishlist-btn">
-                <HeartIcon />
-                收藏商品
               </button>
             </div>
           </div>

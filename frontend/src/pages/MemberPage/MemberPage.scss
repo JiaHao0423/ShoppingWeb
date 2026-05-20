@@ -7,7 +7,7 @@
 // 會員資料頁面
 // ============================================================
 .member-page {
-  background-color: $bg-color;
+  background-color: $page-bg;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: $primary-color;
+  background-color: $color-ink;
   color: #fff;
   padding: 12px 30px 5px;
   position: sticky;

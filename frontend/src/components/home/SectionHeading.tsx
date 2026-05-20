@@ -1,12 +1,15 @@
 type SectionHeadingProps = {
-  label: string;
+  kicker?: string;
   title: string;
+  align?: "left" | "center";
   className?: string;
 };
 
-const SectionHeading = ({ label, title, className = "" }: SectionHeadingProps) => (
-  <header className={`home__heading${className ? ` ${className}` : ""}`}>
-    <span className="home__heading-label">{label}</span>
+const SectionHeading = ({ kicker, title, align = "left", className = "" }: SectionHeadingProps) => (
+  <header
+    className={`home__heading${align === "center" ? " home__heading--center" : ""}${className ? ` ${className}` : ""}`}
+  >
+    {kicker ? <p className="home__heading-kicker">{kicker}</p> : null}
     <h2 className="home__heading-title">{title}</h2>
   </header>
 );

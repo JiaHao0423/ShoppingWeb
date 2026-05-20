@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header/Header";
@@ -29,11 +30,12 @@ import { hasAdminRole } from "@/utils/roles";
 import UserService, { type UpdateUserProfileRequest, type UserAddress } from "@/services/userService";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
+import { UNSPLASH_IMAGES, resolveImageUrl } from "@/constants/unsplashImages";
 import "./MemberPage.scss";
 
 const MEMBER = {
   name: "王小明",
-  avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&auto=format&fit=crop&q=60",
+  avatar: UNSPLASH_IMAGES.avatar,
 };
 
 const ORDER_STATUS_TABS = [
@@ -58,10 +60,10 @@ const RECENT_ORDERS = [
   {
     id: "12345678",
     images: [
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=120&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=120&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=120&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=120&auto=format&fit=crop&q=60",
+      UNSPLASH_IMAGES.productThumb(1),
+      UNSPLASH_IMAGES.productThumb(2),
+      UNSPLASH_IMAGES.productThumb(3),
+      UNSPLASH_IMAGES.productThumb(4),
     ],
     total: 590,
     status: "待收貨",
@@ -74,10 +76,7 @@ const RECENT_ORDERS = [
   },
   {
     id: "12345678",
-    images: [
-      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=120&auto=format&fit=crop&q=60",
-      "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=120&auto=format&fit=crop&q=60",
-    ],
+    images: [UNSPLASH_IMAGES.productThumb(5), UNSPLASH_IMAGES.productThumb(6)],
     total: 590,
     status: "待付款",
     statusKey: "pending_payment",
@@ -88,7 +87,7 @@ const RECENT_ORDERS = [
   },
   {
     id: "12345678",
-    images: ["https://images.unsplash.com/photo-1483985988355-763728e1935b?w=120&auto=format&fit=crop&q=60"],
+    images: [UNSPLASH_IMAGES.productThumb(7)],
     total: 590,
     status: "已完成",
     statusKey: "completed",
@@ -180,14 +179,23 @@ const MemberPage = () => {
         });
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
+        if (isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+          logout();
+          navigate(`${ROUTES.LOGIN}?redirect=${encodeURIComponent(ROUTES.MEMBER)}`, { replace: true });
+          return;
+        }
         notify.error("載入會員資料失敗");
       } finally {
         setLoadingProfile(false);
       }
     };
 
+    if (!user) {
+      setLoadingProfile(false);
+      return;
+    }
     fetchProfile();
-  }, []);
+  }, [logout, navigate, user]);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -490,7 +498,11 @@ const MemberPage = () => {
         <div className="container">
           <section className="member-page__profile">
             <div className="member-page__avatar-wrapper">
-              <img className="member-page__avatar" src={profile.avatarUrl || MEMBER.avatar} alt={profile.name || MEMBER.name} />
+              <img
+                className="member-page__avatar"
+                src={resolveImageUrl(profile.avatarUrl, () => UNSPLASH_IMAGES.avatar)}
+                alt={profile.name || MEMBER.name}
+              />
               <button className="member-page__avatar-upload-btn" aria-label="上傳頭像" onClick={handleAvatarPick}>
                 <CameraIcon />
               </button>

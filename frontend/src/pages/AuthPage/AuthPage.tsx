@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header/Header";
 import "./AuthPage.scss";
 import AuthService from "@/services/authService";
@@ -99,12 +99,20 @@ type AuthFormData = {
 const AuthPage = ({ variant = "login" }: AuthPageProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const config = PAGE_CONFIG[variant] || PAGE_CONFIG.login;
   const { login } = useAuth();
-  const redirectTo =
+  const redirectFromQuery = searchParams.get("redirect");
+  const redirectFromState =
     typeof (location.state as { redirectTo?: unknown } | null)?.redirectTo === "string"
-      ? ((location.state as { redirectTo?: string }).redirectTo ?? null)
+      ? (location.state as { redirectTo: string }).redirectTo
       : null;
+  const redirectTo =
+    redirectFromQuery && redirectFromQuery.startsWith("/")
+      ? redirectFromQuery
+      : redirectFromState?.startsWith("/")
+        ? redirectFromState
+        : null;
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -178,7 +186,11 @@ const AuthPage = ({ variant = "login" }: AuthPageProps) => {
       let errorMessage = "操作失敗，請稍後再試";
       if (isAxiosError(err)) {
         const data = err.response?.data as { message?: string } | undefined;
-        errorMessage = data?.message ?? err.message ?? errorMessage;
+        if (!err.response) {
+          errorMessage = "無法連線至伺服器，請確認後端服務是否啟動後再試";
+        } else {
+          errorMessage = data?.message ?? err.message ?? errorMessage;
+        }
       } else if (err instanceof Error) {
         errorMessage = err.message;
       }

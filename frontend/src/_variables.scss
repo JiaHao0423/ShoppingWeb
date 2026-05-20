@@ -4,11 +4,24 @@ $breakpoint-tablet: 1023px;
 $breakpoint-desktop: 1024px;
 $breakpoint-desktopLarge: 1281px;
 
-// Colors
-$primary-color: #D4A5A5;
-$text-color: #2C2C2C;
-$bg-color: #fff;
-$secondary-color: #6c757d;
+// ── 色票：紙質暖底 + 墨棕字 + 赤陶點綴（避免粉紫 AI 配色）──
+$color-ink: #1c1a18;
+$color-ink-muted: #5c5650;
+$color-ink-faint: rgb(28 26 24 / 0.45);
+$color-paper: #f6f3ef;
+$color-paper-deep: #ebe6df;
+$color-surface: #fffefb;
+$color-line: rgb(28 26 24 / 0.1);
+$color-line-strong: rgb(28 26 24 / 0.18);
+$color-accent: #9e6b62;
+$color-accent-deep: #7d534c;
+$color-accent-soft: rgb(158 107 98 / 0.14);
+
+$primary-color: $color-accent;
+$text-color: $color-ink;
+$bg-color: $color-surface;
+$secondary-color: $color-ink-muted;
+$page-bg: $color-paper;
 
 // Spacing
 $spacing-xs: 8px;
@@ -18,9 +31,19 @@ $spacing-lg: 30px;
 $spacing-xl: 48px;
 
 // Typography
-$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-$font-size-sm: 0.875rem;//14px
-$font-size-base: 1rem;//16px
-$font-size-lg: 1.125rem;//18px
-$font-size-xl: 1.5rem;//24px
-$font-size-xxl: 2rem;//32px
+$font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+$font-serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+$font-family: $font-sans;
+$font-display: $font-serif;
+
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.5rem;
+$font-size-xxl: 2rem;
+
+// Shape
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$ease-out: cubic-bezier(0.33, 1, 0.38, 1);

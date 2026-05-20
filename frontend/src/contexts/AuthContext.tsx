@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useMemo, useState } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import AuthService from "@/services/authService";
+import { AUTH_SESSION_EXPIRED_EVENT, hasAuthSession } from "@/utils/authSession";
 
 type AuthUser = {
   token: string;
@@ -22,21 +23,24 @@ export const AuthContext = createContext<AuthContextValue | undefined>(undefined
 /** 從 localStorage 還原登入狀態；格式異常時回傳 null，避免 JSON.parse 拋錯導致白屏 */
 function parseStoredUser(): AuthUser | null {
   const token = localStorage.getItem("token");
+  if (!token) {
+    return null;
+  }
+  let roles: string[] = [];
   const rawRoles = localStorage.getItem("userRoles");
-  if (!token || rawRoles === null) {
-    return null;
+  if (rawRoles) {
+    try {
+      const parsed = JSON.parse(rawRoles) as unknown;
+      roles = Array.isArray(parsed) ? parsed.filter((r): r is string => typeof r === "string") : [];
+    } catch {
+      roles = [];
+    }
   }
-  try {
-    const parsed = JSON.parse(rawRoles) as unknown;
-    const roles = Array.isArray(parsed) ? parsed.filter((r): r is string => typeof r === "string") : [];
-    return {
-      token,
-      refreshToken: localStorage.getItem("refreshToken") ?? undefined,
-      roles,
-    };
-  } catch {
-    return null;
-  }
+  return {
+    token,
+    refreshToken: localStorage.getItem("refreshToken") ?? undefined,
+    roles,
+  };
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -59,7 +63,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, []);
 
-  const isLoggedIn = useCallback(() => isAuthenticated && Boolean(localStorage.getItem("token")), [isAuthenticated]);
+  useEffect(() => {
+    const syncFromStorage = () => {
+      const stored = parseStoredUser();
+      if (stored) {
+        setIsAuthenticated(true);
+        setUser(stored);
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    };
+
+    const onExpired = () => syncFromStorage();
+
+    window.addEventListener(AUTH_SESSION_EXPIRED_EVENT, onExpired);
+    return () => window.removeEventListener(AUTH_SESSION_EXPIRED_EVENT, onExpired);
+  }, []);
+
+  const isLoggedIn = useCallback(() => hasAuthSession(), []);
 
   const value = useMemo(
     () => ({

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import { resolveProductImageUrl } from "@/constants/unsplashImages";
 import "./ProductSection.scss";
 
 /** 首頁／搜尋等列表列使用的商品卡片資料形狀 */
@@ -55,7 +56,12 @@ const ProductSection = ({ title = "熱銷排行榜", products = [], viewAllLink 
               {products.map((product) => (
                 <article key={product.id} className="product-section__card product-card">
                   <div className="product-card__image-wrapper" onClick={() => handleProductClick(product.id)}>
-                    <img src={product.imageUrl || product.image} alt={product.name} className="product-card__image" loading="lazy" />
+                    <img
+                      src={resolveProductImageUrl(product.imageUrl || product.image, product.id)}
+                      alt={product.name}
+                      className="product-card__image"
+                      loading="lazy"
+                    />
                     {product.isHot && (
                       <div className="product-card__badge">
                         <span className="product-card__badge-text">熱銷</span>

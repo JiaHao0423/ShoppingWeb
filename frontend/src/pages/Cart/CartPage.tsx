@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import { ROUTES } from "@/constants/routes";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
+import { resolveProductThumbUrl } from "@/constants/unsplashImages";
 
 type CartUiItem = {
   id: number | string;
@@ -60,7 +61,7 @@ const Cart = () => {
           size,
           price: +price || 0,
           quantity: +quantity,
-          img: imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200",
+          img: resolveProductThumbUrl(imageUrl, variantId),
         };
       });
 
@@ -87,7 +88,7 @@ const Cart = () => {
       size: item.size ?? "無",
       price: item.price ?? 0,
       quantity: item.quantity,
-      img: item.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200",
+      img: resolveProductThumbUrl(item.imageUrl, item.id),
     }));
     setCartItems(formattedItems);
     setLoading(false);
@@ -184,9 +185,7 @@ const Cart = () => {
     return (
       <div className="cart">
         <Header variant="cart" />
-        <div className="cart__error" style={{ padding: "100px", textAlign: "center", color: "red" }}>
-          {error}
-        </div>
+        <p className="cart__error page-flow__error">{error}</p>
       </div>
     );
   }
@@ -219,9 +218,7 @@ const Cart = () => {
           {cartItems.length > 0 ? (
             cartItems.map((item) => <CartItem key={item.id} item={item} onQuantityChange={handleQuantityChange} onRemove={handleRemoveItem} />)
           ) : (
-            <div className="cart__empty" style={{ padding: "50px", textAlign: "center", color: "#999" }}>
-              您的購物車目前沒有商品
-            </div>
+            <p className="cart__empty page-flow__empty">您的購物車目前沒有商品</p>
           )}
         </div>
 

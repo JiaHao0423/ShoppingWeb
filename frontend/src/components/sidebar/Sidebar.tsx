@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BREAKPOINT_MOBILE_MAX_PX } from "@/constants/breakpoints";
 import "./Sidebar.scss";
 
@@ -16,23 +16,41 @@ type FilterPayload = {
 type SidebarProps = {
   onFilterChange?: (payload: FilterPayload) => void;
   categories?: Array<{ value: string; label: string }>;
+  initialCategory?: string;
+  initialColor?: string;
+  initialSize?: string;
+  initialPriceRange?: [number, number];
 };
 
-const Sidebar = ({ onFilterChange, categories }: SidebarProps) => {
+const Sidebar = ({
+  onFilterChange,
+  categories,
+  initialCategory = "",
+  initialColor = "",
+  initialSize = "",
+  initialPriceRange = [0, 10000],
+}: SidebarProps) => {
   const [expandedTabs, setExpandedTabs] = useState<ExpandedTabs>({
     category: true,
     color: false,
     size: false,
-    price: true,
+    price: false,
   });
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([500, 1000]);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedColor, setSelectedColor] = useState(initialColor);
+  const [selectedSize, setSelectedSize] = useState(initialSize);
+  const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
 
   const minPrice = 0;
-  const maxPrice = 2000;
+  const maxPrice = 10000;
+
+  useEffect(() => {
+    setSelectedCategory(initialCategory);
+    setSelectedColor(initialColor);
+    setSelectedSize(initialSize);
+    setPriceRange(initialPriceRange);
+  }, [initialCategory, initialColor, initialSize, initialPriceRange]);
 
   const toggleTab = (tabName: TabKey) => {
     const isMobile = window.innerWidth <= BREAKPOINT_MOBILE_MAX_PX;

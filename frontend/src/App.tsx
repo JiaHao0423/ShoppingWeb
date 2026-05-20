@@ -7,6 +7,7 @@ import { AdminRoute } from "@/components/protectedRoute/AdminRoute";
 import { Toaster } from "@/components/ui/toaster";
 import { ConfirmModalProvider } from "@/components/ui/confirm-modal";
 import { PageLoading } from "@/components/ui/page-loading";
+import { AuthSessionSync } from "@/components/auth/AuthSessionSync";
 
 const HomePage = lazy(() => import("./pages/Home/HomePage"));
 const SearchPage = lazy(() => import("./pages/Search/SearchPage"));
@@ -25,6 +26,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
+          <AuthSessionSync />
           <Toaster />
           <ConfirmModalProvider />
           <Suspense fallback={<PageLoading />}>
@@ -36,7 +38,14 @@ function App() {
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/order-complete" element={<OrderCompletePage />} />
-              <Route path="/member" element={<MemberPage />} />
+              <Route
+                path="/member"
+                element={
+                  <ProtectedRoute>
+                    <MemberPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/register" element={<AuthPage variant="register" />} />
               <Route path="/login" element={<AuthPage variant="login" />} />
               <Route path="/simple-login" element={<AuthPage variant="simple-login" />} />

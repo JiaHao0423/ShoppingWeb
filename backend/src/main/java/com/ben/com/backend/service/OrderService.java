@@ -8,6 +8,7 @@ import com.ben.com.backend.exception.BadRequestException;
 import com.ben.com.backend.exception.ResourceNotFoundException;
 import com.ben.com.backend.model.*;
 import com.ben.com.backend.repository.*;
+import com.ben.com.backend.util.UnsplashImages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,7 +136,7 @@ public class OrderService {
         .color(productVariant.getColor())
         .size(productVariant.getSize())
         .stock(productVariant.getStock())
-        .imageUrl(productVariant.getImageUrl())
+        .imageUrl(UnsplashImages.resolveVariantImage(productVariant.getImageUrl(), productVariant.getProduct().getId()))
         .build())
       .quantity(orderItem.getQuantity())
       .price(orderItem.getPrice())

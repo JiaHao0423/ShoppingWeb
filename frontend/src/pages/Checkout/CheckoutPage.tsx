@@ -9,6 +9,7 @@ import { ROUTES } from "@/constants/routes";
 import Footer from "@/components/layout/Footer/Footer";
 import notify from "@/utils/notify";
 import { PageLoading } from "@/components/ui/page-loading";
+import { resolveProductThumbUrl } from "@/constants/unsplashImages";
 
 type CheckoutItem = {
   id: number | string;
@@ -58,7 +59,7 @@ const CheckoutPage = () => {
           name: item.productVariant?.productName || "未命名商品",
           price: Number(item.productVariant?.price) || 0,
           quantity: item.quantity,
-          img: item.productVariant?.imageUrl || "https://via.placeholder.com/150",
+          img: resolveProductThumbUrl(item.productVariant?.imageUrl, item.productVariant?.id),
           color: item.productVariant?.color,
           size: item.productVariant?.size,
         }));

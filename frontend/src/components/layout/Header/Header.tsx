@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Heart, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { ChevronLeft, Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import MobileMenu, { type MobileMenuCategory } from "./MobileMenu";
@@ -44,6 +44,10 @@ const buildGroupedMenu = (categories: Array<{ id: number; name: string; parentCa
     { id: "others", name: "其他", items: groupedItems.others },
   ].filter((group) => group.items.length > 0);
 };
+
+const LogoMark = ({ light = false }: { light?: boolean }) => (
+  <span className={`site-header__logo-text${light ? " site-header__logo-text--light" : ""}`}>NY 選品</span>
+);
 
 const Header = ({ variant = "default" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -140,8 +144,7 @@ const Header = ({ variant = "default" }: HeaderProps) => {
           <div className="site-header__bar">
             <div className="site-header__start" />
             <Link to={ROUTES.HOME} className="site-header__logo" aria-label="回到首頁">
-              <Heart className="site-header__logo-icon" />
-              <span className="site-header__logo-text">NY</span>
+              <LogoMark light />
             </Link>
             <ActionIcons light />
           </div>
@@ -174,8 +177,7 @@ const Header = ({ variant = "default" }: HeaderProps) => {
                 />
               </form>
               <Link to={ROUTES.HOME} className="site-header__logo site-header__logo--inline" aria-label="回到首頁">
-                <Heart className="site-header__logo-icon" />
-                <span className="site-header__logo-text">NY</span>
+                <LogoMark />
               </Link>
               <ActionIcons />
             </div>
@@ -204,8 +206,7 @@ const Header = ({ variant = "default" }: HeaderProps) => {
               </nav>
             </div>
             <Link to={ROUTES.HOME} className="site-header__logo" aria-label="回到首頁">
-              <Heart className="site-header__logo-icon" />
-              <span className="site-header__logo-text">NY</span>
+              <LogoMark />
             </Link>
             <ActionIcons />
           </div>

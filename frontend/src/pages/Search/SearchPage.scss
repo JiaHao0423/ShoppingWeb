@@ -1,219 +1,217 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../styles/site-layout" as site;
 
-.search-page {
-  //min-height: calc(100vh - 200px);
-  background-color: #F1F1F1;
+$search-section-py: clamp(1.75rem, 4vw, 2.5rem);
 
-  @include mobile {
-    padding: 0;
-    background-color: white;
+@mixin search-container {
+  @include site.site-container;
+}
+
+@mixin search-grid {
+  display: grid;
+  width: 100%;
+  gap: clamp(1rem, 2vw, 1.25rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include desktop {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.search {
+  width: 100%;
+  min-height: 100vh;
+  background: $page-bg;
+  color: $text-color;
+
+  &__inner {
+    @include search-container;
   }
 
-  // ==================== 佈局 ====================
+  &__header {
+    padding-block: $search-section-py;
+    border-bottom: 1px solid $color-line;
+
+    .search__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+  }
+
+  &__count {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $secondary-color;
+
+    span {
+      font-weight: 600;
+      color: $text-color;
+    }
+  }
+
+  &__clear {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: $primary-color;
+    border: none;
+    border-bottom: 1px solid $primary-color;
+    border-radius: 0;
+    background: transparent;
+
+    &:hover {
+      color: $color-accent-deep;
+      border-color: $color-accent-deep;
+    }
+  }
+
+  &__body {
+    padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(3rem, 5vw, 4rem);
+  }
+
   &__layout {
-    display: grid;
-    place-items: center;
-    background-color: #F1F1F1;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 0;
-    padding-bottom: 30px;
-    // 桌面版：側邊欄 + 主內容
-    @include desktop {
-      grid-template-columns: 200px 1fr;
-      gap: $spacing-lg;
-      padding-left: 11.7%;
-      padding-right: 11.7%;
-      padding-top: 30px;
-    }
 
-    @include desktopLarge {
-      padding-left: 25.5%;
-      padding-right: 25.5%;
+    @include desktop {
+      display: grid;
+      grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr);
+      gap: clamp(2rem, 4vw, 3rem);
+      align-items: start;
     }
   }
 
-  // ==================== 側邊欄位置 ====================
-  .sidebar {
+  &__filters {
     position: sticky;
-    top: 60px; // Header 高度（手機版）
-    z-index: 90;
-    max-height: 50vh;
-    overflow-y: auto;
+    top: 3.5rem;
+    z-index: 20;
+    margin-inline: calc(-1 * #{site.$site-gutter});
+    padding-inline: site.$site-gutter;
+    padding-block: 0.75rem;
+    background: $page-bg;
+    border-bottom: 1px solid $color-line;
 
-    // 桌面版：固定在左側
     @include desktop {
-      position: sticky;
-      top: 80px; // Header 高度
-      align-self: start;
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
-      background-color: #F1F1F1;
+      position: static;
+      margin-inline: 0;
+      padding: 1.25rem;
+      border: 1px solid $color-line;
+      border-radius: $radius-md;
+      background: $color-surface;
     }
   }
 
-  // ==================== 主要內容區 ====================
-  &__main {
-    background-color: white;
-    border-radius: 8px;
+  &__filters-head {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $secondary-color;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    @include desktop {
+      display: flex;
+    }
   }
 
+  &__results {
+    min-width: 0;
+    padding-top: 1rem;
 
-  // ==================== 空狀態 ====================
+    @include desktop {
+      padding-top: 0;
+    }
+  }
+
+  &__grid {
+    @include search-grid;
+  }
+
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: $spacing-xl * 2 $spacing-md;
+    padding: clamp(3rem, 8vw, 5rem) 1.5rem;
     text-align: center;
-    background-color: #F1F1F1;
-
-    @include mobile {
-      padding: $spacing-xl $spacing-md;
-    }
+    border: 1px solid $color-line;
+    border-radius: $radius-md;
+    background: $color-surface;
   }
 
-  &__empty-icon {
-    width: 80px;
-    height: 80px;
-    stroke-width: 1.5;
-    color: #d0d0d0;
-    margin-bottom: $spacing-lg;
+  &__empty-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: $secondary-color;
 
-    @include mobile {
-      width: 60px;
-      height: 60px;
-      margin-bottom: $spacing-md;
+    svg {
+      width: 2rem;
+      height: 2rem;
+      stroke-width: 1.5;
     }
   }
 
   &__empty-title {
-    font-size: $font-size-xl;
-    color: $text-color;
-    margin-bottom: $spacing-sm;
-
-    @include mobile {
-      font-size: $font-size-lg;
-    }
+    margin: 0 0 0.5rem;
+    font-family: $font-display;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 
-  &__empty-description {
-    font-size: $font-size-base;
-    color: $secondary-color;
-    max-width: 400px;
+  &__empty-desc {
+    margin: 0 0 1.25rem;
+    max-width: 22rem;
+    font-size: 0.9375rem;
     line-height: 1.6;
+    color: $secondary-color;
+  }
 
-    @include mobile {
-      font-size: $font-size-sm;
+  &__cta {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: $font-family;
+    color: $text-color;
+    background: transparent;
+    border: 1px solid $color-line-strong;
+    border-radius: $radius-sm;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
     }
   }
 
-  // ==================== 覆蓋 ProductSection 樣式 ====================
-  .product-section {
-    padding: 0; // 移除原本的 padding
-    background-color: transparent; // 移除背景色
-
-    // 隱藏標題（已在上方顯示）
-    &__title {
-      display: none;
-    }
-
-    &__wrapper {
-      background-color: #F1F1F1;
-
-      @include tablet {
-        width: 100vw;
-        align-items: center;
-      }
-    }
-
-    // 隱藏查看全部按鈕
-    &__arrow--bottom {
-      display: none;
-    }
-
-    // 調整網格佈局
-    &__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: $spacing-sm;
-      grid-auto-flow: row;
-
-      // 平板版：2 欄佈局
-      @include tablet {
-        grid-template-columns: repeat(2, 1fr);
-        place-items: center;
-      }
-
-      // 桌面版：3 欄佈局
-      @include desktop {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-    }
-
-    &__card {
-      background-color: #F1F1F1;
-    }
-
-    // 隱藏橫向滾動
-    &__scroll {
-      overflow: visible;
-      padding: 0;
-    }
-
-    // 隱藏右側箭頭
-    &__arrow--right {
-      display: none;
-    }
+  &__error {
+    @include search-container;
+    padding-block: 6rem;
+    text-align: center;
+    color: $color-accent-deep;
   }
 
-  // ==================== 調整商品卡片樣式 ====================
-  .product-card {
-    width: 180px;
-
+  .sidebar {
     @include desktop {
-      width: 240px;
-    }
-
-    &__image-wrapper {
-      padding: 0;
-      height: 180px;
       width: 100%;
-
-      @include desktop {
-        height: 240px;
-      }
-    }
-
-    &__info {
-      padding: 0;
-    }
-
-    &__name {
-      @include mobile {
-        font-size: $font-size-base;
-      }
-    }
-
-    &__price {
-      @include mobile {
-        font-size: $font-size-xl;
-      }
-    }
-
-    &__cart-button {
-      @include mobile {
-        width: 28px;
-        height: 28px;
-      }
-    }
-
-    &__cart-icon {
-      @include mobile {
-        width: 18px;
-        height: 18px;
-      }
+      background: transparent;
     }
   }
 }
