@@ -3,26 +3,20 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
-import {
-  BackIcon,
-  BellIcon,
-  BookOpenIcon,
-  BoxIcon,
-  ChatIcon,
-  CheckBadgeIcon,
-  ChevronRightIcon,
-  CreditCardIcon,
-  DownloadBoxIcon,
-  HeartIcon,
-  LocationIcon,
-  LogoutIcon,
-  CameraIcon,
-  SettingsIcon,
-  StarIcon,
-  TicketIcon,
-  UserIcon,
-  WalletIcon,
-} from "@/components/Icons/Icons";
+import { BackIcon, BellIcon, ChevronRightIcon, CameraIcon, SettingsIcon } from "@/components/Icons/Icons";
+import CheckedIcon from "@/components/Icons/itshover/checked-icon";
+import ClockIcon from "@/components/Icons/itshover/clock-icon";
+import CurrencyDollarIcon from "@/components/Icons/itshover/currency-dollar-icon";
+import DownloadIcon from "@/components/Icons/itshover/download-icon";
+import FileDescriptionIcon from "@/components/Icons/itshover/file-description-icon";
+import HeartIcon from "@/components/Icons/itshover/heart-icon";
+import LogoutIcon from "@/components/Icons/itshover/logout-icon";
+import MapPinIcon from "@/components/Icons/itshover/map-pin-icon";
+import MessageCircleIcon from "@/components/Icons/itshover/message-circle-icon";
+import RosetteDiscountIcon from "@/components/Icons/itshover/rosette-discount-icon";
+import StarIcon from "@/components/Icons/itshover/star-icon";
+import UserIcon from "@/components/Icons/itshover/user-icon";
+import WalletIcon from "@/components/Icons/itshover/wallet-icon";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthService from "@/services/authService";
@@ -39,21 +33,21 @@ const MEMBER = {
 };
 
 const ORDER_STATUS_TABS = [
-  { id: "PENDING", label: "待付款", icon: <CreditCardIcon /> },
-  { id: "SHIPPED", label: "待出貨", icon: <BoxIcon /> },
-  { id: "DELIVERED", label: "待收貨", icon: <DownloadBoxIcon />, active: true },
-  { id: "COMPLETED", label: "已完成", icon: <CheckBadgeIcon /> },
+  { id: "PENDING", label: "待付款", icon: <CurrencyDollarIcon /> },
+  { id: "SHIPPED", label: "待出貨", icon: <FileDescriptionIcon /> },
+  { id: "DELIVERED", label: "待收貨", icon: <DownloadIcon />, active: true },
+  { id: "COMPLETED", label: "已完成", icon: <CheckedIcon /> },
 ] as const;
 
 const TOOLS = [
   { id: "profile", label: "會員資料", icon: <UserIcon /> },
   { id: "wishlist", label: "我的收藏", icon: <HeartIcon /> },
-  { id: "history", label: "歷史紀錄", icon: <BookOpenIcon />, active: true },
-  { id: "coupon", label: "優惠券", icon: <TicketIcon /> },
+  { id: "history", label: "歷史紀錄", icon: <ClockIcon />, active: true },
+  { id: "coupon", label: "優惠券", icon: <RosetteDiscountIcon /> },
   { id: "payment", label: "付款方式", icon: <WalletIcon /> },
   { id: "rating", label: "評價", icon: <StarIcon /> },
-  { id: "review", label: "我的評論", icon: <ChatIcon /> },
-  { id: "address", label: "收貨地址", icon: <LocationIcon /> },
+  { id: "review", label: "我的評論", icon: <MessageCircleIcon /> },
+  { id: "address", label: "收貨地址", icon: <MapPinIcon /> },
 ];
 
 const RECENT_ORDERS = [

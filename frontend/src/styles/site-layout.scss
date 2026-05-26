@@ -219,6 +219,12 @@ $site-gutter-wide: clamp(2rem, 4vw, 3.5rem);
       height: 1.25rem;
     }
 
+    .inline-flex {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     &--menu {
       @include desktop {
         display: none;
@@ -301,6 +307,7 @@ $site-gutter-wide: clamp(2rem, 4vw, 3.5rem);
     height: 1rem;
     flex-shrink: 0;
     color: $secondary-color;
+    stroke: $secondary-color;
   }
 }
 

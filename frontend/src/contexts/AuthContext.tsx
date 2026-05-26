@@ -2,12 +2,14 @@ import React, { createContext, useCallback, useEffect, useMemo, useState } from 
 import AuthService from "@/services/authService";
 import { AUTH_SESSION_EXPIRED_EVENT, hasAuthSession } from "@/utils/authSession";
 
+//型別定義登入使用者資料
 type AuthUser = {
   token: string;
   refreshToken?: string;
   roles: string[];
 };
 
+//型別定義AuthContext的值
 type AuthContextValue = {
   isAuthenticated: boolean;
   user: AuthUser | null;
@@ -21,12 +23,14 @@ type AuthContextValue = {
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 /** 從 localStorage 還原登入狀態；格式異常時回傳 null，避免 JSON.parse 拋錯導致白屏 */
+//以 token 為準：沒有 token 就視為未登入。
 function parseStoredUser(): AuthUser | null {
   const token = localStorage.getItem("token");
   if (!token) {
     return null;
   }
   let roles: string[] = [];
+  //userRoles 防呆，避免壞資料造成白屏。
   const rawRoles = localStorage.getItem("userRoles");
   if (rawRoles) {
     try {
@@ -44,18 +48,21 @@ function parseStoredUser(): AuthUser | null {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  //初始化:第一次載入時就從 localStorage 還原，即使刷新頁面也會保留（只要 token 還在）。
   const initialUser = parseStoredUser();
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialUser));
   const [user, setUser] = useState<AuthUser | null>(initialUser);
   const [loading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  //只更新 React state（isAuthenticated、user、清掉 error），不寫 localStorage。
   const login = useCallback((userData: AuthUser) => {
     setIsAuthenticated(true);
     setUser(userData);
     setError(null);
   }, []);
 
+  //先清 React state，再清掉 localStorage。
   const logout = useCallback(() => {
     setIsAuthenticated(false);
     setUser(null);
@@ -63,6 +70,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, []);
 
+  //每次頁面載入時都重新同步 localStorage 狀態。
+  //同步 localStorage 狀態，避免 React state 與 localStorage 不同步。
+  //Session 過期監聽事件處理：當 Session 過期時，重新同步 localStorage 狀態。
   useEffect(() => {
     const syncFromStorage = () => {
       const stored = parseStoredUser();
@@ -81,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener(AUTH_SESSION_EXPIRED_EVENT, onExpired);
   }, []);
 
+  //以 localStorage 為準：有 token 就視為已登入。
   const isLoggedIn = useCallback(() => hasAuthSession(), []);
 
   const value = useMemo(
@@ -99,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+//自定義 hook，使用 useContext 取得 AuthContext 的值。
 export function useAuth() {
   const context = React.useContext(AuthContext);
 

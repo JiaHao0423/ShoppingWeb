@@ -1,6 +1,9 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { ChevronLeft, Menu } from "lucide-react";
+import MagnifierIcon from "@/components/Icons/itshover/magnifier-icon";
+import ShoppingCartIcon from "@/components/Icons/itshover/shopping-cart-icon";
+import UserIcon from "@/components/Icons/itshover/user-icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import MobileMenu, { type MobileMenuCategory } from "./MobileMenu";
@@ -119,11 +122,11 @@ const Header = ({ variant = "default" }: HeaderProps) => {
     <div className={`site-header__end${light ? " site-header__end--light" : ""}`}>
       {!isSearchPage && (
         <button type="button" className="site-header__icon-btn" onClick={() => navigate(ROUTES.SEARCH)} aria-label="搜尋">
-          <Search />
+          <MagnifierIcon />
         </button>
       )}
       <button type="button" className="site-header__icon-btn site-header__icon-btn--cart" onClick={() => navigate(ROUTES.CART)} aria-label="購物車">
-        <ShoppingBag />
+        <ShoppingCartIcon />
         <span className="site-header__cart-badge">{cartItemsCount > 99 ? "99+" : cartItemsCount}</span>
       </button>
       <button
@@ -132,7 +135,7 @@ const Header = ({ variant = "default" }: HeaderProps) => {
         onClick={() => navigate(isAuthenticated ? ROUTES.MEMBER : ROUTES.LOGIN)}
         aria-label="帳戶"
       >
-        <User />
+        <UserIcon />
       </button>
     </div>
   );
@@ -166,7 +169,7 @@ const Header = ({ variant = "default" }: HeaderProps) => {
                 <Menu />
               </button>
               <form onSubmit={handleSearchSubmit} className="site-header__search-form">
-                <Search className="site-header__search-icon" aria-hidden />
+                <MagnifierIcon className="site-header__search-icon" />
                 <input
                   type="search"
                   value={searchQuery}
